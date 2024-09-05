@@ -12,5 +12,5 @@ My solutions and supplemental resources for CS224N in the spring of 2024.
 
 ### Wed Sep 5
 * Watch [Lecture 3 - Backprop and Neural Networks](https://www.youtube.com/watch?v=X0Jw4kgaFlg&list=PLoROMvodv4rMFqRtEuo6SGjY4XbRIVRd4&index=3).
-* Complete [assignment 1]().
+* Add [assignment 1](https://github.com/JiangJiaWei1103/CS224N-Spring-2024/blob/main/assignments/a1/exploring_word_vectors.ipynb) part1 draft.
 
