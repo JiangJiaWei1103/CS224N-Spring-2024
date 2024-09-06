@@ -16,3 +16,4 @@ My solutions and supplemental resources for CS224N in the spring of 2024.
 
 ### Fri Sep 6
 * Finish [assignment 1](https://github.com/JiangJiaWei1103/CS224N-Spring-2024/blob/main/assignments/a1/exploring_word_vectors.ipynb).
+* Watch [Lecture 4 - Syntactic Structure and Dependency Parsing](https://www.youtube.com/watch?v=PSGIodTN3KE&list=PLoROMvodv4rMFqRtEuo6SGjY4XbRIVRd4&index=5).
