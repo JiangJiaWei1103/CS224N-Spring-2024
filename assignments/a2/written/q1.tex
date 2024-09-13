@@ -51,6 +51,17 @@ Prove that the naive-softmax loss (Equation \ref{naive-softmax}) is the same as 
 
 Your answer should be one line. You may describe your answer in words.
 
+% Ans of Q1 (a)
+\ifans{
+    \newline
+    The true empirical distribution of $\by$ is a \textbf{one-hot} vector with a 1 for the true outside word o, and 0 everywhere else. Hence, the naive-softmax loss can be represented as follows:
+    $$
+        -\sum_{w \in \text{Vocab}} \by_w \log(\hat{\by}_w) 
+        = \sum_{w \ne o} -0 \cdot \log(\hat{\by}_w) + \sum_{w = o} -1 \cdot \log(\hat{\by}_w)
+        = -log (\hat{\by}_o)
+    $$
+}
+
 
 % Question 1-B
 \part[6]
@@ -66,10 +77,42 @@ Your answer should be one line. You may describe your answer in words.
     \textbf{Hint:} You may wish to review and use some introductory linear algebra concepts.
     \item
     The gradient you found is the difference between the two terms. Provide an interpretation of how each of these terms improves the word vector when this gradient is subtracted from the word vector $v_c$.
-
 \end{enumerate}
 
+% Ans of Q1 (a)
+\ifans{
+    \newline
+    \begin{enumerate}[label=\roman*.]
 
+    % i.
+    \item 
+    \begin{align}
+    \frac{\partial}{\partial \bv_c} \bJ_{\text{naive-softmax}}(\bv_c, o, \bU)
+    &= \frac{\partial}{\partial \bv_c} [-\log(\exp(\bu_{o}^\top \bv_c)) + \log(\sum_{w \in \text{Vocab}} \exp(\bu_{w}^\top \bv_c))] \\
+    &= -\bu_o + \frac{\partial}{\partial \bv_c} \log(\sum_{w \in \text{Vocab}} \exp(\bu_{w}^\top \bv_c)) \\
+    &= -\bu_o + \frac{1}{\sum_{w \in \text{Vocab}} \exp(\bu_{w}^\top \bv_c)} \frac{\partial}{\partial \bv_c} \sum_{w \in \text{Vocab}} \exp(\bu_{w}^\top \bv_c) \\
+    &= -\bu_o + \frac{1}{\sum_{w \in \text{Vocab}} \exp(\bu_{w}^\top \bv_c)} \sum_{w' \in \text{Vocab}} \exp(\bu_{w'}^\top \bv_c)\bu_{w'} \\
+    &= -\bu_o + \sum_{w' \in \text{Vocab}} \frac{\exp(\bu_{w'}^\top \bv_c)\bu_{w'}}{\sum_{w \in \text{Vocab}} \exp(\bu_{w}^\top \bv_c)} \bu_{w'} \\
+    &= -\bu_o + \sum_{w' \in \text{Vocab}} \hat{\by}_{w'} \bu_{w'} \\
+    &= -\bu_o + \bU\hat{\by} \\
+    &= -\bU\by + \bU\hat{\by} \\
+    &= \bU(\hat{\by} - \by)
+    \end{align}
+
+    % ii.
+    \item
+    The gradient is equal to zero when $(\hat{\by} - \by)$ lies in the null space of the matrix $\bU$ which stores the outside word vectors as columns. For a matrix $\bU \in \mathbb{R}^{d \times |V|}$, where the embedding dimension $d$ is much smaller than the vocabulary size $|V|$, the columns are linearly dependent, so there exist solutions with $\hat{\by} \ne \by$.
+    
+    % iii.
+    \item
+    The gradient descent step can be defined as follows:
+    $$
+        \bv_c^{\text{new}} \gets \bv_c^{\text{old}} - \eta \bU\hat{\by} + \eta \bU\by
+    $$
+    , where $\eta$ is the step size. Intuitively speaking, adding the vector $\eta \bU\by$ to $\bv_c^{\text{old}}$ will make $\bv_c$ move towards the direction of $\bu_o$ of the outside word $o$ which lies in the context window of the center word $c$. On the other hand, subtracting the vector $\eta \bU\hat{\by}$ will make $\bv_c$ move away from all the other vectors in $\bU$. Note that all probabilities follow $0 < \hat{\by}_i < 1$.
+
+    \end{enumerate}
+}
 
 % Question 1-C
 \part[1]
@@ -77,16 +120,27 @@ In many downstream applications using word embeddings, L2 normalized vectors (e.
 
 \textbf{Hint:} Consider the case where $\mathbf{u}_x = \alpha\mathbf{u}_y$ for some words $x \neq y$ and some scalar $\alpha$. When $\alpha$ is positive, what will be the value of normalized  $\mathbf{u}_x$ and normalized $\mathbf{u}_y$? How might $\mathbf{u}_x$ and $\mathbf{u}_y$ be related for such a normalization to affect or not affect the resulting classification?
 
+% Ans of Q1 (c)
+\ifans{
+    \newline
+    First of all, word embeddings are vectors fully described by magnitude and direction. Suppose there exists a word embedding $\bv = \alpha \bu$, where $\alpha$ is a scaler. The normalized form of $\bu$ is $\frac{\bu}{\| \bu \|}$ and $\frac{\alpha \bu}{|\alpha| \| \bu \|}$ for $\bv$. As can be observed, the magnitude information of $\bv$ is thrown away after L2 normalization is done. For a task that takes magnitude (e.g., binary classification based on the sum of embeddings) into consideration, L2 normalization will affect the result (e.g., the sum leading to change of sign).
+}
 
 % Question 1-D
 \part[5] 
 Compute the partial derivatives of $\bJ_{\text{naive-softmax}}(\bv_c, o, \bU)$ with respect to each of the `outside' word vectors, $\bu_w$'s. There will be two cases: when $w=o$, the true `outside' word vector, and $w \neq o$, for all other words. Please write your answer in terms of $\by$, $\hat{\by}$, and $\bv_c$. In this subpart, you may use specific elements within these terms as well (such as $\by_1$, $\by_2$, $\dots$). Note that $\bu_w$ is a vector while $\by_1, \by_2, \dots$ are scalars. Show your work to receive full credit.
+
+% Ans of Q1 (d)
+\ifans{}
 
 
 
 % Question 1-E
 \part[1]
 Write down the partial derivative of $\bJ_{\text{naive-softmax}}(\bv_c, o, \bU)$ with respect to $\bU$. Please break down your answer in terms of the column vectors $\frac{\partial \bJ(\bv_c, o, \bU)}{\partial \bu_1}$, $\frac{\partial \bJ(\bv_c, o, \bU)}{\partial \bu_2}$, $\cdots$, $\frac{\partial \bJ(\bv_c, o, \bU)}{\partial \bu_{|\text{Vocab}|}}$. No derivations are necessary, just an answer in the form of a matrix.
+
+% Ans of Q1 (e)
+\ifans{}
 
 
 \end{parts}
