@@ -245,7 +245,54 @@ In particular, you \textbf{do not} need to look at the labels on the the depende
 
 \input{dep_parses.tex}
 
+% Ans of Q3 (f)
+\ifans{
+    \begin{enumerate}[label=\roman*.]
 
-\part[2] Recall in part (e), the parser uses features which includes words and their part-of-speech (POS) tags. Explain the benefit of using part-of-speech tags as features in the parser?
+    % i.
+    \item
+    \begin{itemize}
+        \item \textbf{Error type}: Verb Phrase Attachment Error 
+        \item \textbf{Incorrect dependency}: acquisition $\rightarrow$ citing
+        \item \textbf{Correct dependency}: blocked $\rightarrow$ citing
+    \end{itemize}
+
+    % ii.
+    \item
+    \begin{itemize}
+        \item \textbf{Error type}: Modifier Attachment Error
+        \item \textbf{Incorrect dependency}: elements $\rightarrow$ most
+        \item \textbf{Correct dependency}: crucial $\rightarrow$ most
+    \end{itemize}
+    
+    % iii.
+    \item
+    \begin{itemize}
+        \item \textbf{Error type}: Prepositional Phrase Attachment Error
+        \item \textbf{Incorrect dependency}: declined $\rightarrow$ decision
+        \item \textbf{Correct dependency}: reasons $\rightarrow$ decision
+    \end{itemize}
+    The phrase \textit{for the government decision} is a prepositional phrase.
+
+    % iv.
+    \item
+    \begin{itemize}
+        \item \textbf{Error type}: Coordination Attachment Error
+        \item \textbf{Incorrect dependency}: affects $\rightarrow$ one
+        \item \textbf{Correct dependency}: plants $\rightarrow$ one
+    \end{itemize}
+    The first conjunct is \textit{US car plants} and the second conjunct is \textit{one in Quebec}. Also, the word \textit{and} is the coordinating conjunction.
+    
+    \end{enumerate}
+}
+
+
+\part[2] Recall in part (e), the parser uses features which includes words and their part-of-speech (POS) tags. Explain the benefit of using part-of-speech tags as features in the parser?\newline
+
+% Ans of Q3 (g)
+\ifans{
+    \newline
+    Part-of-speech (POS) tags offer valuable grammatical information for each word, aiding the dependency parser in grasping the syntactic structure of the sentence. By clarifying the grammatical role of words (e.g., verb, noun), POS tags help disambiguate words with multiple meanings in different contexts. Additionally, they enhance contextual understanding by enabling the parser to identify subjects, objects, modifiers, and compound nouns, thereby improving overall parsing accuracy.
+}
 
 \end{parts}

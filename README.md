@@ -28,3 +28,8 @@ My solutions and supplemental resources for CS224N in the spring of 2024.
 * Watch [Lecture 7 - Translation, Seq2Seq, Attention](https://www.youtube.com/watch?v=wzfWHP6SXxY&list=PLoROMvodv4rMFqRtEuo6SGjY4XbRIVRd4&index=7), [Lecture 8 - Self-Attention and Transformers](https://www.youtube.com/watch?v=LWMzyfvuehA&list=PLoROMvodv4rMFqRtEuo6SGjY4XbRIVRd4&index=8), and [Lecture 9 - Pretraining](https://www.youtube.com/watch?v=DGfCRXuNA2w&list=PLoROMvodv4rMFqRtEuo6SGjY4XbRIVRd4&index=9).
 * (Optional) Read [An Analysis on the Learning Rules of the Skip-Gram Model](https://arxiv.org/abs/2003.08489) to section III.
 * Add [assignment 2](https://github.com/JiangJiaWei1103/CS224N-Spring-2024/tree/main/assignments/a2) written to Q1 (c).
+
+### Fri Sep 13
+* Read [Dropout: A Simple Way to Prevent Neural Networks from Overfitting](https://www.cs.toronto.edu/~rsalakhu/papers/srivastava14a.pdf).
+    * Only focus on the motivation and effect of dropout.
+* Finish [assignment 2](https://github.com/JiangJiaWei1103/CS224N-Spring-2024/tree/main/assignments/a2).

@@ -18,7 +18,6 @@
                 	\btheta_{t+1} &\gets \btheta_t - \alpha \bm_{t+1}
                 }
                 where $\beta_1$ is a hyperparameter between 0 and 1 (often set to  0.9). Briefly explain in 2--4 sentences (you don't need to prove mathematically, just give an intuition) how using $\bm$ stops the updates from varying as much and why this low variance may be helpful to learning, overall.\newline
-              
                 
             \subpart[2] Adam extends the idea of {\it momentum} with the trick of {\it adaptive learning rates} by keeping track of  $\bv$, a rolling average of the magnitudes of the gradients:
                 \alns{
@@ -28,10 +27,21 @@
                 }
                 where $\odot$ and $/$ denote elementwise multiplication and division (so $\bz \odot \bz$ is elementwise squaring) and $\beta_2$ is a hyperparameter between 0 and 1 (often set to  0.99). Since Adam divides the update by $\sqrt{\bv}$, which of the model parameters will get larger updates?  Why might this help with learning?
                 
-           
-                
                 \end{subparts}
-        
+
+            % Ans of Q2 (a)
+            \ifans{
+                \begin{enumerate}[label=\roman*.]
+            
+                % i.
+                \item
+                Instead of updating model parameters based solely on the current gradient, \textit{momentum} smooths out the updates by accumulating an exponentially decaying average of past gradients. This approach prevents sudden shifts in the parameters due to noisy gradients and reduces oscillations when gradients fluctuate in direction. Additionally, \textit{momentum} helps the parameter update maintain speed, which prevents learning from getting stuck in plateaus or local minima.
+                
+                % ii.
+                \item
+                Model parameters with smaller second moment estimates (i.e., lower uncentered variance in the gradients) will receive larger updates. Instead of applying the same learning rate to all parameters, the scaling operation $/ \sqrt{\bv}$ adapts the learning rate for each parameter. This allows parameters with infrequent or small gradients to be updated with larger step sizes, leading to faster convergence. Conversely, parameters with larger gradient magnitudes receive smaller updates, preventing overshooting and stabilizing the learning process. Overall, \textit{adaptive learning rates} help control parameter-wise updates, enhancing the model's generalizability.
+                \end{enumerate}
+            }
         
             \part[4] 
             Dropout\footnote{Srivastava et al., 2014, \url{https://www.cs.toronto.edu/~hinton/absps/JMLRdropout.pdf}} is a regularization technique. During training, dropout randomly sets units in the hidden layer $\bh$ to zero with probability $p_{\text{drop}}$ (dropping different units each minibatch), and then multiplies $\bh$ by a constant $\gamma$. We can write this as:
@@ -50,7 +60,40 @@
                 
             
           \subpart[2] Why should dropout be applied during training? Why should dropout \textbf{NOT} be applied during evaluation? \textbf{Hint:} it may help to look at the dropout paper linked. \newline
-          
+
+          % Ans of Q2 (b)
+            \ifans{
+                \begin{enumerate}[label=\roman*.]
+            
+                % i.
+                \item
+                $$
+                    \gamma = \frac{1}{1 - p_{\text{drop}}}
+                $$
+
+                It's quite intuitive to write down the value of $\gamma$. Following provides the complete derivation:
+                \begin{align}
+                \mathbb{E}_{p_{\text{drop}}}[\bh_\text{drop}]
+                &= \mathbb{E}_{p_{\text{drop}}}[\gamma \bd \odot \bh] \\
+                &= \gamma \bh \odot \mathbb{E}_{p_{\text{drop}}}[\bh] \\
+                &= \gamma \bh \odot \begin{bmatrix} 
+                    0 \times p_{\text{drop}} + 1 \times (1 - p_{\text{drop}}) \\
+                    \stackrel{\vdots}{\times D_h}
+                \end{bmatrix} \\
+                &= \gamma (1 - p_{\text{drop}}) \bh
+                \end{align}
+
+                \begin{equation}
+                \gamma (1 - p_{\text{drop}}) \bh = \bh \Rightarrow \gamma = \frac{1}{1 - p_{\text{drop}}}
+                \end{equation}
+                
+                % ii.
+                \item
+                During training, randomly masking a portion of neurons helps alleviate a phenomenon, called \textbf{co-adaptation}, introduced in the paper. Concretely speaking, dropout prevents each neuron from heavily depending on a specific set of other neurons to correct the mistake, which can lead to better generalizability.\newline
+                For evaluation (or inference), dropout is disabled so all neurons contribute to the prediction, ensuring stable and consistent outputs. To align expected outputs at training and test time, one approach (called \textbf{inverted dropout}) scales activations during training by dividing the keep probability, while keeping test activations unchanged. Alternatively, training remains unchanged, and activations are scaled down during testing.
+                
+                \end{enumerate}
+            }
          
         \end{subparts}
 

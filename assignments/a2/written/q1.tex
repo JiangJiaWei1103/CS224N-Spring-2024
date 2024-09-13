@@ -131,16 +131,37 @@ In many downstream applications using word embeddings, L2 normalized vectors (e.
 Compute the partial derivatives of $\bJ_{\text{naive-softmax}}(\bv_c, o, \bU)$ with respect to each of the `outside' word vectors, $\bu_w$'s. There will be two cases: when $w=o$, the true `outside' word vector, and $w \neq o$, for all other words. Please write your answer in terms of $\by$, $\hat{\by}$, and $\bv_c$. In this subpart, you may use specific elements within these terms as well (such as $\by_1$, $\by_2$, $\dots$). Note that $\bu_w$ is a vector while $\by_1, \by_2, \dots$ are scalars. Show your work to receive full credit.
 
 % Ans of Q1 (d)
-\ifans{}
-
-
+\ifans{
+    \newline
+    \begin{align}
+    \frac{\partial}{\partial \bu_w} \bJ_{\text{naive-softmax}}(\bv_c, o, \bU)
+    &= \frac{\partial}{\partial \bu_w} [-\log(\exp(\bu_{o}^\top \bv_c)) + \log(\sum_{w \in \text{Vocab}} \exp(\bu_{w}^\top \bv_c))] \\
+    &= \frac{\partial}{\partial \bu_w} (-\bu_{o}^\top \bv_c) + \frac{\partial}{\partial \bu_w} \log \sum_{w \in \text{Vocab}} \exp(\bu_w^\top \bv_c) \\
+    &= \frac{\partial}{\partial \bu_w} (-\bu_{o}^\top \bv_c) + \frac{1}{\sum_{w' \in \text{Vocab}} \exp(\bu_{w'}^\top \bv_c)} \frac{\partial}{\partial \bu_w} \exp(\bu_w^\top \bv_c) \\
+    &= \frac{\partial}{\partial \bu_w} (-\bu_{o}^\top \bv_c) + \frac{\exp(\bu_w^\top \bv_c)}{\sum_{w' \in \text{Vocab}} \exp(\bu_{w'}^\top \bv_c)} \bv_c \\
+    &= \frac{\partial}{\partial \bu_w} (-\bu_{o}^\top \bv_c) + \hat{\by}_w \bv_c \\
+    &= \begin{cases}
+        (\hat{\by}_w - 1) \bv_c & \text{, if } w = o \\
+        \hat{\by}_w \bv_c & \text{, otherwise}
+    \end{cases}
+    \end{align}
+}
 
 % Question 1-E
 \part[1]
 Write down the partial derivative of $\bJ_{\text{naive-softmax}}(\bv_c, o, \bU)$ with respect to $\bU$. Please break down your answer in terms of the column vectors $\frac{\partial \bJ(\bv_c, o, \bU)}{\partial \bu_1}$, $\frac{\partial \bJ(\bv_c, o, \bU)}{\partial \bu_2}$, $\cdots$, $\frac{\partial \bJ(\bv_c, o, \bU)}{\partial \bu_{|\text{Vocab}|}}$. No derivations are necessary, just an answer in the form of a matrix.
 
 % Ans of Q1 (e)
-\ifans{}
-
+\ifans{
+    \newline
+    Following the answer in (d), we can define $\frac{\partial \bJ_{\text{naive-softmax}}(\bv_c, o, \bU)}{\partial \bU} \in \mathbb{R}^{d \times |\text{Vocab}|}$ as follows:
+    \begin{align}
+    \frac{\partial \bJ(\bv_c, o, \bU)}{\partial \bU}
+    &= \begin{bmatrix}
+    \hat{\by}_1 \bv_c & \hat{\by}_2 \bv_c & ... & (\hat{\by}_o - 1) \bv_c & ... & \hat{\by}_{|\text{Vocab}|} \bv_c
+    \end{bmatrix} \\ 
+    &= \bv_c (\hat{\by} - \by)^\top
+    \end{align}
+}
 
 \end{parts}
