@@ -1,0 +1,160 @@
+\newpage
+\clearpage
+
+\Large{\textbf{Appendix: GCP How-to}}\\
+\normalsize
+\paragraph{How to Obtain SSH connection info}
+After following the instructions in the \href{https://docs.google.com/document/d/1FLx0CXIn-SoExxKM1efC-E-6iBjUR4uEnpGnfemMMR0/edit?pli=1#heading=h.4tqnggp12z76}{GCP Guide for CS224n}, your Gloogle Cloud Compute Engine dashboard should look like Fig \ref{fig:gcloud-compute-dashboard}. Click on the arrow button near SSH and select \textit{View gcloud command} as shown in the figure. What you will get looks like the following. Make a note of the zone, the machine name, and the project name which in the example are respectively \texttt{us-west4-b}, \texttt{nvidia-gpu-optimized-vmi-1-vm} and \texttt{grand-hangar-420500}. \textbf{Yours will be different!}
+
+\begin{lstlisting}[
+    breaklines=true,
+    postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+]
+gcloud compute ssh --zone "us-west4-b" "nvidia-gpu-optimized-vmi-1-vm"  --project "grand-hangar-420500"
+\end{lstlisting}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{images/gcloud-dashboard.jpg}
+    \caption{The cloud VM you create should be based on the \href{https://console.cloud.google.com/marketplace/product/nvidia-ngc-public/nvidia-gpu-optimized-vmi}{nvidia-gpu-optimized-vmi} virtual machine image (VMI). After deploying the instance, click on the menu near SSH and select \emph{View gcloud command} to obtain the SSH connection information.}
+    \label{fig:gcloud-compute-dashboard}
+\end{figure}
+
+
+
+\paragraph{How to Connect to the Cloud VM with SSH Tunelling}
+The following ssh connection command, which includes the \texttt{--ssh-flag "-L 6007:localhost:6007"} option, will also forward port 6007 of the cloud machine to the same port number on your local machine (ssh tunneling). Therefore, if the tensorboard server is running on the cloud VM and listening to port 6007, after establishing an ssh connection as follows, you will be able to access at \href{http://localhost:6007/}{http://localhost:6007/} in a web browser on your local machine.
+Run the following ssh command to connect to the cloud machine. \textbf{be sure to use your own zone, project name and machine name}
+
+\begin{lstlisting}[
+    breaklines=true,
+    postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+]
+gcloud compute ssh --zone "us-west4-b" "nvidia-gpu-optimized-vmi-1-vm" --project "grand-hangar-420500" --ssh-flag "-L 6007:localhost:6007"
+\end{lstlisting}
+
+
+
+\paragraph{How to Copy Your Code From Your Computer to the Cloud VM}
+\begin{itemize}
+    \item zip current directory, which should contain the \texttt{env-cpu.yml} and \texttt{env-gpu.yml} files.
+\begin{lstlisting}[
+    breaklines=true,
+    postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+]
+zip -r student.zip *
+\end{lstlisting}
+    
+    \item copy the obtained zip file to the cloud machine
+\begin{lstlisting}[
+    breaklines=true,
+    postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+]
+gcloud compute scp student.zip  nvidia-gpu-optimized-vmi-1-vm:~/  --zone "us-west4-b" --project "grand-hangar-420500" 
+\end{lstlisting}
+
+\end{itemize}
+
+
+
+\paragraph{How to Train the NMT System on the Cloud VM}
+\begin{itemize}
+\item If zip is not installed on your cloud machine. Install it as follows and try again.
+\begin{lstlisting}[
+    breaklines=true,
+    postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+]
+sudo apt-get install zip
+\end{lstlisting}
+
+    \item Unzip student folder on the cloud machine
+\begin{lstlisting}[
+    breaklines=true,
+    postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+]
+unzip student.zip -d student
+cd student
+\end{lstlisting}
+
+    \item Create conda GPU environment
+\begin{lstlisting}
+conda env create --file env-gpu.yml
+\end{lstlisting}
+
+    \item Activate conda GPU environment
+\begin{lstlisting}
+conda activate cs224n-nmt-gpu    
+\end{lstlisting}
+
+    \item create a tmux session in which you start training the machine translation model
+    
+\begin{lstlisting}
+tmux new -s s-nmt
+
+# start the training (in the tmux session)
+sh run.sh train
+
+# detach from the tmux session
+CTRL+B D
+\end{lstlisting}
+
+    \item create a tmux session in which you start TensorBoard
+
+\begin{lstlisting}
+tmux new -s s-tboard
+
+# start the tensorboard (in the tmux session)
+tensorboard --logdir runs/ --port 6007
+
+# detach from the tmux session
+CTRL+B D
+\end{lstlisting}
+
+    \item You can attach/detach from the two tmux sessions as needed. See the appendix on Tmux for basic use cases.
+    \item If you established the SSH connection with the appropriate port forwarding options, you can view tensorboard in a web browser on your local machine at this address  \href{http://localhost:6007/}{http://localhost:6007/} (Fig. \ref{fig:tensorboard-gpu})
+
+    \item when the training is complete, run the test phase
+
+\begin{lstlisting}
+tmux attach -t s-nmt
+sh run.sh test
+\end{lstlisting}
+
+    \item The next section shows how to make a grade scope submission with the artifacts generated on the cloud VM.
+\end{itemize}
+
+
+
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[height=8cm]{images/tensorboard_gpu.jpg}
+    \caption{Tensorboard running on your local machine and showing loss and perplexity values on your cloud virtual machine.}
+    \label{fig:tensorboard-gpu}
+\end{figure}
+
+
+
+
+\paragraph{How to Download the Gradescope Submission Package from Your Cloud VM}
+\begin{itemize}
+    \item Connect to the cloud VM as specified above
+    \item On the Cloud VM, run the following command to create the gradescope submission package (\texttt{assignment3.zip})
+\begin{lstlisting}[
+    breaklines=true,
+    postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+]
+sh collect_submission.sh 
+\end{lstlisting}
+
+    \item Disconnect from the cloud VM (by running \textbf{exit}), or open a terminal on your local machine. 
+    \item Download the GradeScope submission package to your local machine
+\begin{lstlisting}[
+    breaklines=true,
+    postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+]
+gcloud compute scp nvidia-gpu-optimized-vmi-1-vm:~/student/assignment3.zip . --zone "us-west4-b" --project "grand-hangar-420500"
+\end{lstlisting}
+
+    \item Submit  \texttt{assignment3.zip} to GradeScope
+\end{itemize}

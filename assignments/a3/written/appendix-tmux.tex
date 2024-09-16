@@ -1,0 +1,40 @@
+\newpage
+\clearpage
+\Large{\textbf{Appendix: Tmux How-to}}\\
+\normalsize
+\texttt{tmux} (terminal multiplexer) is a tool that lets you create and toggle between multiple terminals that run in the background, and keep then running even after you disconnect your ssh session.
+%
+The following assumes that you are already connected (via ssh) to your cloud virtual machine instance, and shows you basic use cases of tmux. Learn more about tmux at \href{https://github.com/tmux/tmux/wiki}{https://github.com/tmux/tmux/wiki}
+
+\begin{itemize}
+    \item  Create and attach to a new tmux session (named \emph{s-tboard})
+\begin{lstlisting}
+tmux new -s s-tboard
+\end{lstlisting}
+    \item Run a program in the new session. We will run tensorboard
+\begin{lstlisting}
+tensorboard --logdir runs/ --port 6007
+\end{lstlisting}
+
+\item (From within the tmux session), Detach from a tmux session, and leave the program you started running in the session.
+\begin{lstlisting}
+CTRL+b d
+\end{lstlisting}
+
+\item (After detaching from tmux), view all tmux sessions 
+\begin{lstlisting}
+tmux ls
+\end{lstlisting}
+
+
+\item attach to a particular tmux session (named s-nmt)
+\begin{lstlisting}
+tmux attach -t s-nmt
+\end{lstlisting}
+
+\item to terminate a tmux session (from within the session)
+\begin{lstlisting}
+exit
+\end{lstlisting}
+
+\end{itemize}

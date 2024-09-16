@@ -1,0 +1,183 @@
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 22.1) (preloaded format=pdflatex 2024.9.15)  15 SEP 2024 13:14
+entering extended mode
+ restricted \write18 enabled.
+ file:line:error style messages enabled.
+ %&-line parsing enabled.
+**/Users/abaowei/Desktop/Hack-the-Brain/Hack-the-Course/cs224n/CS224N/assignments/a3/written/main.tex
+(/Users/abaowei/Desktop/Hack-the-Brain/Hack-the-Course/cs224n/CS224N/assignments/a3/written/main.tex
+LaTeX2e <2024-06-01> patch level 2
+L3 programming layer <2024-08-16>
+(/Users/abaowei/Library/Application Support/MiKTeX/texmfs/install/tex/latex/exam/exam.cls
+Document Class: exam 2023/07/09 Version 2.704 by Philip Hirschhorn
+(/Users/abaowei/Library/Application Support/MiKTeX/texmfs/install/tex/latex/base/ifthen.sty
+Package: ifthen 2024/03/16 v1.1e Standard LaTeX ifthen package (DPC)
+) (/Users/abaowei/Library/Application Support/MiKTeX/texmfs/install/tex/latex/base/article.cls
+Document Class: article 2024/02/08 v1.4n Standard LaTeX document class
+(/Users/abaowei/Library/Application Support/MiKTeX/texmfs/install/tex/latex/base/size10.clo
+File: size10.clo 2024/02/08 v1.4n Standard LaTeX file (size option)
+)
+\c@part=\count194
+\c@section=\count195
+\c@subsection=\count196
+\c@subsubsection=\count197
+\c@paragraph=\count198
+\c@subparagraph=\count199
+\c@figure=\count266
+\c@table=\count267
+\abovecaptionskip=\skip49
+\belowcaptionskip=\skip50
+\bibindent=\dimen141
+)
+\@extrawidth=\skip51
+\@rightmargin=\skip52
+\@extrahead=\skip53
+\@extrafoot=\skip54
+\run@exhd=\skip55
+\fp@exhd=\skip56
+\run@exft=\skip57
+\fp@exft=\skip58
+\covrun@exhd=\skip59
+\covfp@exhd=\skip60
+\covrun@exft=\skip61
+\covfp@exft=\skip62
+\c@num@coverpages=\count268
+\c@latest@ques=\count269
+\c@ques@end=\count270
+\c@last@object=\count271
+\c@incmp@ques=\count272
+\c@next@ques=\count273
+\c@next@page=\count274
+\c@tmp@hlfcntr=\count275
+\c@ifpos@cntr=\count276
+\c@question=\count277
+\c@partno=\count278
+\c@subpart=\count279
+\c@subsubpart=\count280
+\c@choice=\count281
+\c@numpoints=\count282
+\c@numbonuspoints=\count283
+\c@pointsof@thisquestion=\count284
+\c@bonuspointsof@thisquestion=\count285
+\c@numquestions=\count286
+\c@numparts=\count287
+\c@numsubparts=\count288
+\c@numsubsubparts=\count289
+\c@Curr@Page=\count290
+\c@@pagepoints=\count291
+\c@@pagebonuspoints=\count292
+\c@pageof@pagepoints=\count293
+\c@pageof@pagebonuspoints=\count294
+\c@latest@points=\count295
+\c@latest@bonuspoints=\count296
+\pageinfo@commands=\toks17
+\temp@toks=\toks18
+\pagepoint@commands=\toks19
+\point@toks=\toks20
+\c@ques@object=\count297
+\marginpointssep=\skip63
+\rightpointsmargin=\skip64
+\choice@toks=\toks21
+\answerlinelength=\skip65
+\answerskip=\skip66
+\answerclearance=\skip67
+\fillinlinelength=\skip68
+\linefillheight=\skip69
+\linefillthickness=\skip70
+\dottedlinefillheight=\skip71
+\gridsize=\skip72
+\gridlinewidth=\skip73
+\minboxheight=\skip74
+\c@@iterator=\count298
+\@cellwidth=\skip75
+\c@tbl@points=\count299
+\c@tbl@bonuspoints=\count300
+\c@pq@index=\count301
+\c@pq@index@pts=\count302
+\c@pq@index@bpts=\count303
+\c@num@cols=\count304
+\c@num@rows=\count305
+\c@current@row=\count306
+\c@cols@done=\count307
+\c@exam@saved@eqnum=\count308
+\exam@box=\box52
+\saved@totalleftmargin=\dimen142
+\@sollistdepth=\count309
+\exam@FrameRule=\dimen143
+\exam@FrameSep=\dimen144
+) (/Users/abaowei/Library/Application Support/MiKTeX/texmfs/install/tex/xelatex/xecjk/xeCJK.sty (/Users/abaowei/Library/Application Support/MiKTeX/texmfs/install/tex/latex/l3kernel/expl3.sty
+Package: expl3 2024-08-16 L3 programming layer (loader) 
+ (/Users/abaowei/Library/Application Support/MiKTeX/texmfs/install/tex/latex/l3backend/l3backend-pdftex.def
+File: l3backend-pdftex.def 2024-05-08 L3 backend support: PDF output (pdfTeX)
+\l__color_backend_stack_int=\count310
+\l__pdf_internal_box=\box53
+))
+Package: xeCJK 2022/08/05 v3.9.1 Typesetting CJK scripts with XeLaTeX
+
+
+/Users/abaowei/Library/Application Support/MiKTeX/texmfs/install/tex/xelatex/xecjk/xeCJK.sty:43: Critical Package xeCJK Error: The xeCJK package requires XeTeX to function.
+(xeCJK)                         
+(xeCJK)                         You must change your typesetting engine to
+(xeCJK)                         "xelatex"
+(xeCJK)                         instead of plain "latex" or "pdflatex" or
+(xeCJK)                         "lualatex".
+(xeCJK)                         Loading xeCJK will abort!
+
+Type <return> to continue.
+ ...                                              
+                                                  
+l.43 ..._critical:nn { xeCJK } { Require-XeTeX } }
+                                                  
+
+LaTeX does not know anything more about this error, sorry.
+
+Try typing <return> to proceed.
+If that doesn't work, type X <return> to quit.
+
+Reading the current file 'xeCJK' will stop.
+
+
+) (/Users/abaowei/Library/Application Support/MiKTeX/texmfs/install/tex/latex/fontspec/fontspec.sty (/Users/abaowei/Library/Application Support/MiKTeX/texmfs/install/tex/latex/l3packages/xparse/xparse.sty
+Package: xparse 2024-08-16 L3 Experimental document command parser
+)
+Package: fontspec 2024/05/11 v2.9e Font selection for XeLaTeX and LuaLaTeX
+
+
+/Users/abaowei/Library/Application Support/MiKTeX/texmfs/install/tex/latex/fontspec/fontspec.sty:101: Fatal Package fontspec Error: The fontspec package requires either XeTeX or
+(fontspec)                      LuaTeX.
+(fontspec)                      
+(fontspec)                      You must change your typesetting engine to,
+(fontspec)                      e.g., "xelatex" or "lualatex" instead of
+(fontspec)                      "latex" or "pdflatex".
+
+Type <return> to continue.
+ ...                                              
+                                                  
+l.101 \msg_fatal:nn {fontspec} {cannot-use-pdftex}
+                                                  
+
+LaTeX does not know anything more about this error, sorry.
+
+Try typing <return> to proceed.
+If that doesn't work, type X <return> to quit.
+
+This is a fatal error: LaTeX will abort.
+
+
+
+/Users/abaowei/Library/Application Support/MiKTeX/texmfs/install/tex/latex/fontspec/fontspec.sty:101: Emergency stop.
+<read *> 
+         
+l.101 \msg_fatal:nn {fontspec} {cannot-use-pdftex}
+                                                  
+*** (cannot \read from terminal in nonstop modes)
+
+ 
+Here is how much of TeX's memory you used:
+ 1680 strings out of 473899
+ 29277 string characters out of 5717093
+ 1925957 words of memory out of 5000000
+ 24616 multiletter control sequences out of 15000+600000
+ 558069 words of font info for 36 fonts, out of 8000000 for 9000
+ 1141 hyphenation exceptions out of 8191
+ 65i,0n,79p,337b,44s stack positions out of 10000i,1000n,20000p,200000b,200000s
+/Users/abaowei/Library/Application Support/MiKTeX/texmfs/install/tex/latex/fontspec/fontspec.sty:101:  ==> Fatal error occurred, no output PDF file produced!

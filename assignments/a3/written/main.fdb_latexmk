@@ -1,0 +1,20 @@
+# Fdb version 4
+["pdflatex"] 1726377255.37269 "/Users/abaowei/Desktop/Hack-the-Brain/Hack-the-Course/cs224n/CS224N/assignments/a3/written/main.tex" "main.pdf" "main" 1726377255.86466 2
+  "/Users/abaowei/Desktop/Hack-the-Brain/Hack-the-Course/cs224n/CS224N/assignments/a3/written/main.tex" 1726377252.85075 4098 dc5815788b9095c9ec23b77f50370516 ""
+  "/Users/abaowei/Library/Application Support/MiKTeX/texmfs/data/miktex/data/le/pdftex/pdflatex.fmt" 1726376982.14341 24274636 fc49bccca03096b7b0c979bf3ead598e ""
+  "/Users/abaowei/Library/Application Support/MiKTeX/texmfs/install/tex/latex/base/article.cls" 1726376063.76367 20144 67a5f8e0f9e445e8ec6834e595cebdc9 ""
+  "/Users/abaowei/Library/Application Support/MiKTeX/texmfs/install/tex/latex/base/ifthen.sty" 1726376063.75602 5525 3792dcd5bc92158cfaf00cc591e557cf ""
+  "/Users/abaowei/Library/Application Support/MiKTeX/texmfs/install/tex/latex/base/size10.clo" 1726376063.75709 8448 358bf3de18513f057a13bdc6e6770c41 ""
+  "/Users/abaowei/Library/Application Support/MiKTeX/texmfs/install/tex/latex/exam/exam.cls" 1726376859.03182 292471 cf61070d137ac4d18fa1ab3aa514381e ""
+  "/Users/abaowei/Library/Application Support/MiKTeX/texmfs/install/tex/latex/fontspec/fontspec.sty" 1726376055.96019 3755 4872b99d810c024f9c09bb1c62ffee3b ""
+  "/Users/abaowei/Library/Application Support/MiKTeX/texmfs/install/tex/latex/l3backend/l3backend-pdftex.def" 1726376059.31805 29785 9f93ab201fe5dd053afcc6c1bcf7d266 ""
+  "/Users/abaowei/Library/Application Support/MiKTeX/texmfs/install/tex/latex/l3kernel/expl3.sty" 1726376059.5942 6565 433202089ba6cc213cc39b66dbcea832 ""
+  "/Users/abaowei/Library/Application Support/MiKTeX/texmfs/install/tex/latex/l3packages/xparse/xparse.sty" 1726376059.82628 9783 ab4bee47700c04aadedb8da27591b0ab ""
+  "/Users/abaowei/Library/Application Support/MiKTeX/texmfs/install/tex/xelatex/xecjk/xeCJK.sty" 1726376888.28325 183137 ed372550124703b2b73cbcc0b47cb20f ""
+  "main.aux" 0 -1 0 "pdflatex"
+  "main.tex" 1726377252.85075 4098 dc5815788b9095c9ec23b77f50370516 ""
+  (generated)
+  "main.aux"
+  "main.log"
+  "main.pdf"
+  (rewritten before read)
