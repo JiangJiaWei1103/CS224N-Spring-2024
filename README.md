@@ -2,7 +2,9 @@
 
 [[course](https://web.stanford.edu/class/cs224n/index.html)]
 
-My solutions and supplemental resources for CS224N in the spring of 2024.
+> Note that this repo is still a work in progress...
+
+In this repository, I share my solutions and additional resources for CS224N in the spring of 2024. While there are already some excellent repos offering solutions for various semesters, I found that none fully cover the latest version of the course. Moreover, many of these solutions seem to be copied from past versions, which may not reflect the latest updates. Hence, I decide to document my own learning process and provide all the solutions. If you spot any mistakes, feel free to file an issue!
 
 ## Offline Schedule
 > Just follow your own path.
