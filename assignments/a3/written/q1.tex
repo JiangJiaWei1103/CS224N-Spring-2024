@@ -198,27 +198,28 @@ sh run.sh test
 
     % Ans of Q1 (h)
     \ifans{
-    
+    \newline
+        The BLEU on the test set is $22.332$ (rounded to the third decimal).
     }
     
     \part[4] (written) In class, we learned about dot product attention, multiplicative attention, and additive attention.  As a reminder, dot product attention is $\be_{t,i} = \bs_t^T\bh_i$, multiplicative attention is $\be_{t,i} = \bs_t^T\bW\bh_i$, and additive attention is $\be_{t,i} = \bv^T \text{tanh}(\bW_1\bh_i + \bW_2\bs_t)$.
     
     \begin{subparts}
     \subpart[2] Explain one advantage and one disadvantage of \textit{dot product attention} compared to multiplicative attention.
-    \subpart[2] Explain one advantage and one disadvantage of \textit{additive attention} compared to multiplicative attention.
-    \end{subparts}
 
-    % Ans of Q1 (i)
     \ifans{
-        % \begin{enumerate}[label=\roman*.]
-    
-        % % i.
-        % \item
-    
-        % % ii.
-        % \item
-        
-        % \end{enumerate}
+        \newline
+        Dot product attention involves straightforward vector dot product operations, making it computationally efficient and fast. However, because it lacks additional trainable parameters, it may struggle with capturing the most relevant attention positions in more complex contexts, limiting the model flexibility.
     }
+
+    \subpart[2] Explain one advantage and one disadvantage of \textit{additive attention} compared to multiplicative attention.
+
+    \ifans{
+        \newline
+        Additive attention introduces a non-linear transformation in the attention computation, which makes it more flexible for capturing complex relationships between query and key pairs. However, this added complexity increases computational overhead and, in some cases, can lead to overfitting, especially when dealing with limited data.
+    }
+    
+    \end{subparts}
+    
         
 \end{parts}

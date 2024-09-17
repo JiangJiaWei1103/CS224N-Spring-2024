@@ -33,3 +33,13 @@ My solutions and supplemental resources for CS224N in the spring of 2024.
 * Read [Dropout: A Simple Way to Prevent Neural Networks from Overfitting](https://www.cs.toronto.edu/~rsalakhu/papers/srivastava14a.pdf).
     * Only focus on the motivation and effect of dropout.
 * Finish [assignment 2](https://github.com/JiangJiaWei1103/CS224N-Spring-2024/tree/main/assignments/a2).
+
+### Sun Sep 15
+* Watch [Lecture 10 - Prompting, Reinforcement Learning from Human Feedback](https://www.youtube.com/watch?v=SXpJ9EmG3s4&list=PLoROMvodv4rMFqRtEuo6SGjY4XbRIVRd4&index=10).
+
+### Mon Sep 16
+* Do [assignment 3](https://github.com/JiangJiaWei1103/CS224N-Spring-2024/tree/main/assignments/a2) coding part.
+    * Train a NMT model, which achieves BLEU 22.33 on the test set. 
+
+### Tue Sep 17
+* Finish [assignment 3](https://github.com/JiangJiaWei1103/CS224N-Spring-2024/tree/main/assignments/a3).

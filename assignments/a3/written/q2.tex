@@ -6,8 +6,10 @@
 
     \part[3] Look at the {\monofam{src.vocab}} file for some examples of phrases and words in the source language vocabulary. When encoding an input Mandarin Chinese sequence into ``pieces'' in the vocabulary, the tokenizer maps the sequence to a series of vocabulary items, each consisting of one or more characters (thanks to the {\monofam{sentencepiece}} tokenizer, we can perform this segmentation even when the original text has no white space). Given this information, how could adding a 1D Convolutional layer after the embedding layer and before passing the embeddings into the bidirectional encoder help our NMT system? \textbf{Hint:} each Mandarin Chinese character is either an entire word or a morpheme in a word. Look up the meanings of 电, 脑, and 电脑 separately for an example. The characters 电 (electricity) and  脑 (brain) when combined into the phrase 电脑 mean computer.
 
-
-
+    \ifans{
+        \newline
+        Given that each Mandarin Chinese character can function as a whole word or a morpheme within a word, applying a 1D convolutional layer helps aggregate word embeddings over a small context window, facilitating basic contextual understanding. Specifically, sliding a convolutional filter (i.e., kernel) allows the model to capture local n-gram patterns, which may convey important meaning when considered together.
+    }
 
     \part[8] Here we present a series of errors we found in the outputs of our NMT model (which is the same as the one you just trained). For each example of a reference (i.e., `gold') English translation, and NMT (i.e., `model') English translation, please:
     
@@ -24,6 +26,17 @@
         \textbf{Source Sentence:} 贼人其后被警方拘捕及被判处盗窃罪名成立。 \newline
         \textbf{Reference Translation:} \textit{\underline{the culprits were} subsequently arrested and convicted.}\newline
         \textbf{NMT Translation:} \textit{\underline{the culprit was} subsequently arrested and sentenced to theft.}
+
+        \ifans{
+            \begin{itemize}
+            \item
+            \textbf{Error}: "Culprits" should be translated into the plural form, instead of singular.
+            \item
+            \textbf{Reason}: "贼人" can be used to represent a group of culprits or just a single culprit. Without providing appropriate context, the NMT system can make it hard to translate this sentence correctly.
+            \item
+            \textbf{Fix}: Providing additional context about the scenario can help the model generate more accurate translations.
+            \end{itemize}
+        }
         
         
 
@@ -31,6 +44,17 @@
         \textbf{Source Sentence}: 几乎已经没有地方容纳这些人,资源已经用尽。\newline
         \textbf{Reference Translation}: \textit{there is almost no space to accommodate these people, and resources have run out.   }\newline
         \textbf{NMT Translation}: \textit{the resources have been exhausted and \underline{resources have been exhausted}.}
+
+        \ifans{
+            \begin{itemize}
+            \item
+            \textbf{Error}: The duplicated translation of only one half of the sentence is generated.
+            \item
+            \textbf{Reason}: The sentence describes two phenomena which share similar contexts, both of which describe the lack of something. The reason why the translation fails might be that the attention mechanism attends to inappropriate positions. That is, the model focuses only on the second half of the sentence.
+            \item
+            \textbf{Fix}: To make attention mechanism distinguish the subtle context differences, we can try to modify the model architecture or add more training data to enhance model generalizability.
+            \end{itemize}
+        }
         
         
 
@@ -38,14 +62,34 @@
         \textbf{Source Sentence}: 当局已经宣布今天是国殇日。 \newline
         \textbf{Reference Translation}: \textit{authorities have announced \underline{a national mourning today.}}\newline
         \textbf{NMT Translation}: \textit{the administration has announced \underline{today's day.}}
-        
+
+        \ifans{
+            \begin{itemize}
+            \item
+            \textbf{Error}: The translation of "国殇" is totally missed.
+            \item
+            \textbf{Reason}: "国殇" can be literally translated to "national mourning". The reason why the NMT system misses this word might be that this term has a relatively low term frequency in the corpus, which is insufficient for the model to learn to correctly translate it.
+            \item
+            \textbf{Fix}: Considering there might exist insufficient data, we can train the NMT system with a larger corpus containing more samples related to this topic. Additionally, providing richer context might be beneficial for translating infrequent terms.
+            \end{itemize}
+        }
         
         
         \subpart[2] 
         \textbf{Source Sentence\footnote{This is a Cantonese sentence! The data used in this assignment comes from GALE Phase 3, which is a compilation of news written in simplified Chinese from various sources scraped from the internet along with their translations. For more details, see \url{https://catalog.ldc.upenn.edu/LDC2017T02}. }:} 俗语有云:``唔做唔错"。\newline
         \textbf{Reference Translation:} \textit{\underline{`` act not, err not "}, so a saying goes.}\newline
         \textbf{NMT Translation:} \textit{as the saying goes, \underline{`` it's not wrong. "}}
-        
+
+        \ifans{
+            \begin{itemize}
+            \item
+            \textbf{Error}: The model translates only the second half of the proverb, which generates a totally opposite meaning.
+            \item
+            \textbf{Reason}: Proverbs can be viewed as a special representation form in Mandarin Chinese, which might appear infrequently in the training corpus. The shortage of training samples can hinder the model from learning the syntactic structure and contextual meaning of proverbs.
+            \item
+            \textbf{Fix}: In addition to adding more training samples containing proverbs, we can consider pre-training the decoder on a much larger Mandarin Chinese corpus, which might help it to understand how Chinese words and phrases are structured.
+            \end{itemize}
+        }
         
     \end{subparts}
 
@@ -88,21 +132,114 @@
         \newline
         
         Which of the two NMT translations is considered the better translation according to the BLEU Score? Do you agree that it is the better translation?
-        
-        
+
+        \ifans{
+            \begin{enumerate}[label=(\alph*)]
+            \item BLEU score of $\bc_1$ \newline
+            The first step is to derive the modified precisions of 1-gram and 2-gram as follows:
+            \begin{align*}
+                p_1 &= \frac{0 + 0 + 0 + 0 + 0 + 1 + 1 + 1 + 1}{9} = \frac{4}{9} \\
+                p_2 &= \frac{0 + 0 + 0 + 0 + 0 + 1 + 1 + 1}{8} = \frac{3}{8}
+            \end{align*}
+
+            Then, we compute the brevity penalty BP. As can be found, the length of $\bc_1$ is closer to $\br_1$, so BP can be computed as follows:
+            $$
+                BP = \exp(1 - \frac{len(\br_1)}{len(\bc_1)}) = \exp(1 - \frac{11}{9})
+            $$
+
+            Finally, we can derive the BLEU score:
+            $$
+                BLEU = \exp(1 - \frac{11}{9}) \times \exp(0.5 \times \log{\frac{4}{9}} + 0.5 \times \log{\frac{3}{8}}) \approx 0.327
+            $$
+            
+            \item BLEU score of $\bc_2$ \newline
+            Following the same computational logic, we compute the BLEU score of $\bc_2$ as follows:
+            \begin{align*}
+                p_1 &= \frac{1 + 1 + 1 + 1 + 1 + 1}{6} = \frac{6}{6} \\
+                p_2 &= \frac{0 + 1 + 1 + 1 + 0}{5} = \frac{3}{5}
+            \end{align*}
+
+            \begin{gather*}
+                BP = 1 \\
+                \because len(\bc_2) = len(\br_2)
+            \end{gather*}
+
+            $$
+                BLEU = 1 \times \exp(0.5 \times \log{\frac{6}{6}} + 0.5 \times \log{\frac{3}{5}}) \approx 0.775
+            $$
+
+            \end{enumerate}
+
+            $\bc_2$ is considered to be the better translation in terms of BLEU score. However, I think $\bc_1$ is better because it is a smooth translation which completely covers the meaning of the source sentence. Considering the BLEU score is based on n-gram overlaps, we can expect that a high BLEU score doesn't necessarily imply good translation quality. 
+        }
         
         \subpart[5] Our hard drive was corrupted and we lost Reference Translation $\br_1$. Please recompute BLEU scores for $\bc_1$ and $\bc_2$, this time with respect to $\br_2$ only. Which of the two NMT translations now receives the higher BLEU score? Do you agree that it is the better translation?
+
+        \ifans{
+            \begin{enumerate}[label=(\alph*)]
+            \item BLEU score of $\bc_1$ \newline
+            \begin{align*}
+                p_1 &= \frac{0 + 0 + 0 + 0 + 0 + 1 + 1 + 1 + 1}{9} = \frac{4}{9} \\
+                p_2 &= \frac{0 + 0 + 0 + 0 + 0 + 1 + 1 + 1}{8} = \frac{3}{8}
+            \end{align*}
+
+            \begin{gather*}
+                BP = 1 \\
+                \because len(\bc_1) > len(\br_2)
+            \end{gather*}
+
+            $$
+                BLEU = 1 \times \exp(0.5 \times \log{\frac{4}{9}} + 0.5 \times \log{\frac{3}{8}}) \approx 0.408
+            $$
+            
+            \item BLEU score of $\bc_2$ \newline
+            \begin{align*}
+                p_1 &= \frac{1 + 0 + 0 + 1 + 1 + 0}{6} = \frac{3}{6} \\
+                p_2 &= \frac{0 + 0 + 0 + 1 + 0}{5} = \frac{1}{5}
+            \end{align*}
+
+            \begin{gather*}
+                BP = 1 \\
+                \because len(\bc_2) = len(\br_2)
+            \end{gather*}
+
+            $$
+                BLEU = 1 \times \exp(0.5 \times \log{\frac{3}{6}} + 0.5 \times \log{\frac{1}{5}}) \approx 0.316
+            $$
+            
+            \end{enumerate}
+
+            Without $\br_1$ as a reference, $\bc_1$ is now considered to be the better translation in terms of BLEU score, which is reasonable as stated in problem ii.
+        }
         
         
         
         \subpart[2] Due to data availability, NMT systems are often evaluated with respect to only a single reference translation. Please explain (in a few sentences) why this may be problematic. In your explanation, discuss how the BLEU score metric assesses the quality of NMT translations when there are multiple reference transitions versus a single reference translation.
-        
+
+        \ifans{
+            \newline
+            By manually calculating BLEU scores in problems i and ii, it's clear that BLEU heavily relies on \textbf{n-gram overlaps} between the translated sentence and the reference translations. Since there are often multiple valid ways to translate a source sentence, using only one reference translation can result in a low BLEU score, even for high-quality translations. However, incorporating diverse reference translations accounts for this variation, leading to a more robust and accurate evaluation.
+        }
         
         
         \subpart[2] List two advantages and two disadvantages of BLEU, compared to human evaluation, as an evaluation metric for Machine Translation. 
-        
-        
-        
+
+        \ifans{
+            \begin{itemize}
+                \item Advantages
+                \begin{enumerate}[label=(\alph*)]
+                    \item BLEU provides a fast, inexpensive, and language-independent way to automatically evaluate neural machine translation (NMT) systems, especially when compared to labor-intensive human evaluations.
+                    \item As an objective metric, BLEU ensures consistent comparisons across different models and systems.
+                \end{enumerate}
+                \item Disadvantages
+                \begin{enumerate}[label=(\alph*)]
+                    \item BLEU relies heavily on exact n-gram matches, which overlooks the importance of contextual understanding and variations in translation, such as synonyms or word order. This makes it challenging for BLEU to accurately reflect translation quality in terms of coherence and fluency.
+                    \item BLEU assigns equal weights to all n-grams, though the significance of different n-grams within a sentence can vary, which potentially leads to an imbalanced evaluation.
+                \end{enumerate}
+            \end{itemize}
+        }
+    
+
     \end{subparts}
 
 
@@ -112,11 +249,41 @@
 
     \begin{subparts}
         \subpart[2] Did the translation quality improve over the training iterations for the model? Give three examples of translations of the example sentence at iterations 200, 3000, and the last iteration to illustrate your answer. For each iteration, pick the first beam search hypothesis as an example:
-        
-        
+
+        \ifans{
+            \newline
+            The example source sentence is shown as follows: \newline
+            "▁我还澄清了在该会议上提出的若干事项。" \newline
+
+            Following demonstrate the first hypotheses at three different iterations:
+            \begin{itemize}
+                \item Iteration 2000 \newline
+                i would also like to thank the number of a number of a number of a number of a number of a number of issues.
+                \item Iteration 44000 \newline
+                i have also clarified a number of matters put forward at the conference.
+                \item Iteration 90000 (the last) \newline
+                i have also clarified the number of matters raised at that meeting. \newline
+            \end{itemize}
+            
+            Compared to the gold standard "I was able to provide clarification on some of the matters which were raised at that meeting.", we conclude that the translation quality improves through the training process. Due to the logging issue, I choose different iterations, rather than the ones stated in the question.
+        }
         
         
         \subpart[2] How do various hypotheses resulting from beam search qualitatively compare? Give three other examples of hypotheses proposed by beam search at the last iteration to illustrate your answer.
+
+        \ifans{
+            \newline
+            Following demonstrate three hypotheses along with their scores at the last iteration:\begin{itemize}
+                \item Score -4.77 \newline
+                I have also clarified the number of matters put forward at that meeting.
+                \item Score -5.78 \newline
+                I also have clarified a number of matters put forward at that meeting.
+                \item Score -6.37 \newline
+                I also have clarification on a number of matters put forward at that meeting. \newline
+            \end{itemize}
+            
+            Comparing the different hypotheses in the final iteration, I believe the third one is the best translation, as it fully captures the original meaning, despite having the lowest log probability.
+        }
         
         
     \end{subparts}
