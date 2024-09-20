@@ -46,3 +46,16 @@ In this repository, I share my solutions and additional resources for CS224N in 
 
 ### Tue Sep 17
 * Finish [assignment 3](https://github.com/JiangJiaWei1103/CS224N-Spring-2024/tree/main/assignments/a3). 
+
+### Wed Sep 18
+* Read chapters 1 and 2 of [Natural Language Processing with Transformers](https://transformersbook.com/).
+
+### Thu Sep 19
+* Read chapters 3 to 5 of [Natural Language Processing with Transformers](https://transformersbook.com/).
+
+### Fri Sep 20
+> I switch back to the course schedule in the spring of 2023, because there's no lectures updated for 2024. However, all solutions still follow the 2024 version.
+* Watch [Lecture11 - Natural Language Generation](https://www.youtube.com/watch?v=N9L32bFieEY&list=PLoROMvodv4rMFqRtEuo6SGjY4XbRIVRd4&index=11).
+    * I think it's more consistent to take this lecture before [Lecture 10 - Prompting, Reinforcement Learning from Human Feedback](https://www.youtube.com/watch?v=SXpJ9EmG3s4&list=PLoROMvodv4rMFqRtEuo6SGjY4XbRIVRd4&index=10).
+* Read chapter 6 of [Natural Language Processing with Transformers](https://transformersbook.com/).
+
