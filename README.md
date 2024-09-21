@@ -59,3 +59,5 @@ In this repository, I share my solutions and additional resources for CS224N in 
     * I think it's more consistent to take this lecture before [Lecture 10 - Prompting, Reinforcement Learning from Human Feedback](https://www.youtube.com/watch?v=SXpJ9EmG3s4&list=PLoROMvodv4rMFqRtEuo6SGjY4XbRIVRd4&index=10).
 * Read chapter 6 of [Natural Language Processing with Transformers](https://transformersbook.com/).
 
+### Sat Sep 21
+* Add [assignment 4](https://github.com/JiangJiaWei1103/CS224N-Spring-2024/tree/main/assignments/a4) written to Q1 (c) i and Q2.

@@ -1,0 +1,285 @@
+\graphicspath{ {images/} }
+
+
+\newcommand{\Real}{\mathbb{R}}
+\newcommand{\Int}{\mathbb{Z}}
+\renewcommand\Re{\ensuremath{\text{Re}}} 
+
+
+
+\newcommand{\henc}{\bh^{\text{enc}}}
+\newcommand{\hencfw}[1]{\overrightarrow{\henc_{#1}}}
+\newcommand{\hencbw}[1]{\overleftarrow{\henc_{#1}}}
+
+
+\newcommand{\cenc}{\bc^{\text{enc}}}
+\newcommand{\cencfw}[1]{\overrightarrow{\cenc_{#1}}}
+\newcommand{\cencbw}[1]{\overleftarrow{\cenc_{#1}}}
+
+
+\newcommand{\hdec}{\bh^{\text{dec}}}
+
+
+\newcommand{\cdec}{\bc^{\text{dec}}}
+
+
+
+\lstset{basicstyle=\ttfamily,columns=flexible,numbers=none}
+
+\titledquestion{Pretrained Transformer models and knowledge access}[35]
+\label{sec:char_enc}
+
+You'll train a Transformer to perform a task that involves accessing knowledge about the world --- knowledge which isn't provided via the task's training data (at least if you want to generalize outside the training set). You'll find that it more or less fails entirely at the task.
+You'll then learn how to pretrain that Transformer on Wikipedia text that contains world knowledge, and find that finetuning that Transformer on the same knowledge-intensive task enables the model to access some of the knowledge learned at pretraining time.
+You'll find that this enables models to perform considerably above chance on a held out development set.
+
+The code you're provided with is a fork of Andrej Karpathy's \href{https://github.com/karpathy/minGPT}{\mingpt}.
+It's nicer than most research code in that it's relatively simple and transparent.
+The ``GPT'' in \mingpt refers to the Transformer language model of OpenAI, originally described in \href{https://s3-us-west-2.amazonaws.com/openai-assets/research-covers/language-unsupervised/language_understanding_paper.pdf}{this paper} \cite{radford2018improving}.
+
+As in previous assignments, you will want to develop on your machine locally, then run training on GCP/Colab. You can use the same conda environment from previous assignments for local development, and the same process for training on a GPU.\footnote{See \href{https://docs.google.com/document/d/1FLx0CXIn-SoExxKM1efC-E-6iBjUR4uEnpGnfemMMR0}{CS224n GCP Guide} for a refresher on GCP.}
+
+You'll need around 3 hours for training, so budget your time accordingly! We have provided a sample Colab with the the commands that require GPU training. \textbf{Note that dataset multi-processing can fail on local machines without GPU, so to debug locally, you might have to change \texttt{num\_workers} to 0.}
+
+Your work with this codebase is as follows:
+\begin{parts}
+\part[0]
+\textbf{Check out the demo.}\\
+In the \texttt{mingpt-demo/} folder is a Jupyter notebook \texttt{play\_char.ipynb} that trains and samples from a Transformer language model.
+Take a look at it (locally on your computer) to get somewhat familiar with how it defines and trains models.
+Some of the code you're writing below will be inspired by what you see in this notebook.
+
+Note that you do not have to write any code, run the notebook or submit written answers for this part.
+
+\part[0] \textbf{Read through \texttt{NameDataset} in \texttt{src/dataset.py}, our dataset for reading name-birthplace pairs.}\\
+The task we'll be working on with our pretrained models is attempting to access the birth place of a notable person, as written in their Wikipedia page.
+We'll think of this as a particularly simple form of question answering:
+\begin{quote}
+    \textit{Q: Where was \textit{[person]} born?}\\
+    \textit{A: [place]}
+\end{quote}
+
+From now on, you'll be working with the \texttt{src/} folder. The code in \texttt{mingpt-demo/} won't be changed or evaluated for this assignment.
+In \texttt{dataset.py}, you'll find the the class \texttt{NameDataset}, which reads a TSV (tab-separated values) file of name/place pairs and produces examples of the above form that we can feed to our Transformer model.
+
+To get a sense of the examples we'll be working with, if you run the following code, it'll load your \texttt{NameDataset} on the training set \texttt{birth\_places\_train.tsv} and print out a few examples.
+\begin{lstlisting}[language=bash]
+    python src/dataset.py namedata 
+\end{lstlisting}
+
+Note that you do not have to write any code or submit written answers for this part.
+
+\part[0] \textbf{Implement finetuning (without pretraining).}\\
+Take a look at \texttt{run.py}. It has some skeleton code specifying flags you'll eventually need to handle as command line arguments.
+In particular, you might want to \textit{pretrain}, \textit{finetune}, or \textit{evaluate} a model with this code. For now, we'll focus on the finetuning function, in the case without pretraining.
+
+Taking inspiration from the training code in the \texttt{play\_char.ipynb} file, write code to finetune a Transformer model on the name/birthplace dataset, via examples from the \texttt{NameDataset} class. For now, implement the case without pretraining (i.e. create a model from scratch and train it on the birthplace prediction task from part (b)). You'll have to modify two sections, marked \texttt{[part c]} in the code: one to initialize the model, and one to finetune it. Note that you only need to initialize the model in the case labeled ``vanilla'' for now (later in section (g), we will explore a model variant).
+Use the hyperparameters for the \texttt{Trainer} specified in the \texttt{run.py} code.
+
+Also take a look at the \textit{evaluation} code which has been implemented for you. It samples predictions from the trained model and calls \texttt{evaluate\_places()} to get the total percentage of correct place predictions. You will run this code in part (d) to evaluate your trained models.
+
+This is an intermediate step for later portions, including Part~\ref{part_predictions_nopretraining}, which contains commands you can run to check your implementation. No written answer is required for this part.
+
+\textbf{Hint:} Both \texttt{run.py} and \texttt{play\_char.ipynb} use minGPT so the code for this part will be similar to the training code in \texttt{play\_char.ipynb}.
+
+\part[4] \label{part_predictions_nopretraining} \textbf{Make predictions (without pretraining).}\\ 
+Train your model on \texttt{birth\_places\_train.tsv}, and evaluate on \texttt{birth\_dev.tsv}. Specifically, you should now be able to run the following three commands:
+\begin{lstlisting}[language=bash, basicstyle=\small\ttfamily]
+# Train on the names dataset
+python src/run.py finetune vanilla wiki.txt \
+        --writing_params_path vanilla.model.params \
+        --finetune_corpus_path birth_places_train.tsv
+        
+# Evaluate on the dev set, writing out predictions
+python src/run.py evaluate vanilla wiki.txt  \
+        --reading_params_path vanilla.model.params \
+        --eval_corpus_path birth_dev.tsv \
+        --outputs_path vanilla.nopretrain.dev.predictions
+        
+# Evaluate on the test set, writing out predictions
+python src/run.py evaluate vanilla wiki.txt  \
+        --reading_params_path vanilla.model.params \
+        --eval_corpus_path birth_test_inputs.tsv \
+        --outputs_path vanilla.nopretrain.test.predictions
+\end{lstlisting}
+
+Training will take less than 10 minutes (on GCP).  Report your model's accuracy on the dev set (as printed by the second command above). Similar to assignment 3, we also have Tensorboard logging in assignment 4 for debugging. It can be launched using \texttt{tensorboard --logdir expt/}.  Don't be surprised if it is well below 10\%; we will be digging into why in Part 4. As a reference point, we want to also calculate the accuracy the model would have achieved if it had just predicted ``London'' as the birth place for everyone in the dev set. Fill in \texttt{london\_baseline.py} to calculate the accuracy of that approach and report your result in the file. You should be able to leverage existing code such that the file is only a few lines long.
+
+
+\part[10]\textbf{Define a \textit{span corruption} function for pretraining.}\\
+In the file \texttt{src/dataset.py}, implement the \texttt{\_\_getitem\_\_()} function for the dataset class \\ \texttt{CharCorruptionDataset}.
+Follow the instructions provided in the comments in \texttt{dataset.py}.
+Span corruption is explored in the \href{https://arxiv.org/pdf/1910.10683.pdf}{T5 paper} \cite{raffel2020exploring}.
+It randomly selects spans of text in a document and replaces them with unique tokens (noising).
+Models take this noised text, and are required to output a pattern of each unique sentinel followed by the tokens that were replaced by that sentinel in the input.
+In this question, you'll implement a simplification that only masks out a single sequence of characters.
+
+This question will be graded via autograder based on whether your span corruption function implements some basic properties of our spec.
+We'll instantiate the \texttt{CharCorruptionDataset} with our own data, and draw examples from it.
+
+To help you debug, if you run the following code, it'll sample a few examples from your \\ \texttt{CharCorruptionDataset} on the pretraining dataset \texttt{wiki.txt} and print them out for you.
+\begin{lstlisting}[language=bash]
+    python src/dataset.py charcorruption
+\end{lstlisting}
+
+\part[10] \textbf{Pretrain, finetune, and make predictions. Budget about 1 hour for training.}\\
+Now fill in the \textit{pretrain} portion of \texttt{run.py}, which will pretrain a model on the span corruption task. Additionally, modify your \textit{finetune} portion to handle finetuning in the case \textit{with} pretraining. In particular, if a path to a pretrained model is provided in the bash command, load this model before finetuning it on the birthplace prediction task.
+Pretrain your model on \texttt{wiki.txt} (which should take approximately 40-60 minutes), finetune it on \texttt{NameDataset} and evaluate it. Specifically, you should be able to run the following four commands:
+
+\begin{lstlisting}[language=bash]
+# Pretrain the model
+python src/run.py pretrain vanilla wiki.txt \
+        --writing_params_path vanilla.pretrain.params
+        
+# Finetune the model
+python src/run.py finetune vanilla wiki.txt \
+        --reading_params_path vanilla.pretrain.params \
+        --writing_params_path vanilla.finetune.params \
+        --finetune_corpus_path birth_places_train.tsv
+        
+# Evaluate on the dev set; write to disk
+python src/run.py evaluate vanilla wiki.txt  \
+        --reading_params_path vanilla.finetune.params \
+        --eval_corpus_path birth_dev.tsv \
+        --outputs_path vanilla.pretrain.dev.predictions
+        
+# Evaluate on the test set; write to disk
+python src/run.py evaluate vanilla wiki.txt  \
+        --reading_params_path vanilla.finetune.params \
+        --eval_corpus_path birth_test_inputs.tsv \
+        --outputs_path vanilla.pretrain.test.predictions
+\end{lstlisting}
+
+We expect the dev accuracy will be at least 15\%, and will expect a similar accuracy on the held out test set.
+
+\part[11] \textbf{Write and try out a different kind of position embeddings (Budget about 1 hour for training)}\\
+
+In the previous part, you used the vanilla Transformer model, which used learned positional embeddings. In the written part, you also learned about the sinusoidal positional embeddings used in the original Transformer paper. In this part, you'll implement a different kind of positional embedding, called \textit{RoPE} (Rotary Positional Embedding) \cite{su2024roformer}.
+
+RoPE is a fixed positional embedding that is designed to encode relative position rather than absolute position. The issue with absolute positions is that if the transformer won't perform well on context lengths (e.g. 1000) much larger than it was trained on (e.g. 128), because the distribution of the position embeddings will be very different from the ones it was trained on. Relative position embeddings like RoPE alleviate this issue.
+
+Given a feature vector with two features $x^{(1)}_t$ and $x^{(2)}_t$ at position $t$ in the sequence, the RoPE positional embedding is defined as:
+\begin{align*}
+    \text{RoPE}(x^{(1)}_t, x^{(2)}_t, t) = \begin{pmatrix} \cos t\theta & -\sin t\theta \\ \sin t\theta  & \cos t\theta \end{pmatrix} \begin{pmatrix} x^{(1)}_t \\ x^{(2)}_t \end{pmatrix}
+\end{align*}
+where $\theta$ is a fixed angle. For two features, the RoPE operation corresponds to a 2D rotation of the features by an angle $t\theta$. Note that the angle is a function of the position $t$.
+
+For a $d$ dimensional feature, RoPE is applied to each pair of features with an angle $\theta_i$ defined as $\theta_i = 10000^{-2(i-1)/d},\ i \in \{1, 2, \ldots, d/2\}$.
+\begin{align}
+    \label{eq:rope_matrix}
+    \begin{pmatrix}
+    \cos t\theta_1 & -\sin t\theta_1 & 0 & 0 & \cdots & 0 & 0\\
+    \sin t\theta_1 & \cos t\theta_1 & 0 & 0 & \cdots & 0 & 0\\
+    0 & 0 & \cos t\theta_2 & -\sin t\theta_2 & \cdots & 0 & 0\\
+    0 & 0 & \sin t\theta_2 & \cos t\theta_2 & \cdots & 0 & 0\\
+    \vdots & \vdots & \vdots & \vdots & \ddots & \vdots & \vdots\\
+    0 & 0 & 0 & 0 & \cdots & \cos t\theta_{d/2} & -\sin t\theta_{d/2}\\
+    0 & 0 & 0 & 0 & \cdots & \sin t\theta_{d/2} & \cos t\theta_{d/2}
+    \end{pmatrix}
+    \begin{pmatrix}
+        x^{(1)}_t \\ x^{(2)}_t \\ x^{(3)}_t \\ x^{(4)}_t \\ \vdots \\ x^{(d-1)}_t \\ x^{(d)}_t 
+    \end{pmatrix}
+\end{align}
+
+
+Finally, instead of adding the positional embeddings to the input embeddings, RoPE is applied to the key and query vectors for each head in the attention block for all the Transformer layers.
+
+\begin{subparts}
+
+\subpart[2] 
+Using the rotation interpretation, RoPE operation can be viewed as rotation of the complex number $x^{(1)}_t + i x^{(2)}_t$ by an angle $t\theta$. Recall that this corresponds to multiplication by $e^{it\theta} = \cos t\theta + i \sin t\theta$.
+
+For higher dimensional feature vectors, this interpretation allows us to compute Equation~\ref{eq:rope_matrix} more efficiently. Specifically, we can rewrite the RoPE operation as an element-wise multiplication (denoted by $\odot$) of two vectors as follows:
+
+\begin{align}\label{eq:rope_elementwise}
+    \begin{pmatrix}
+        \cos t\theta_1 + i\sin t\theta_1 \\
+        \cos t\theta_2 + i\sin t\theta_2 \\
+        \vdots \\
+        \cos t\theta_{d/2} + i\sin t\theta_{d/2}
+    \end{pmatrix}
+    \odot
+    \begin{pmatrix}
+        x^{(1)}_t + i x^{(2)}_t \\
+        x^{(3)}_t + i x^{(4)}_t \\
+        \vdots \\
+        x^{(d-1)}_t + i x^{(d)}_t
+    \end{pmatrix}
+\end{align}
+
+Show that the elements of the vector in Equation~\ref{eq:rope_matrix} can be obtained from Equation~\ref{eq:rope_elementwise}. Note that some additional operations like reshaping are necessary to make the two expressions equal but you do not need to provide a detailed derivation for full points. 
+
+\ifans{}
+
+\subpart[1] \textbf{Relative Embeddings.} Now we will show that the dot product of the RoPE embeddings of two vectors at positions $t_1$ and $t_2$ depends on the relative position $t_1 - t_2$ only. 
+
+For simiplicity, we will assume two dimensional feature vectors (eg. $[a, b]$) and work with their complex number representations (eg. $a + ib$).
+
+Show that $\langle \text{RoPE}(z_1, t_1), \text{RoPE}(z_2, t_2) \rangle = \langle \text{RoPE}(z_1, t_1 - t_2), \text{RoPE}(z_2, 0) \rangle$ where $\langle \cdot, \cdot \rangle$ denotes the dot product and $\text{RoPE}(z, t)$ is the RoPE embedding of vector $z$ at position $t$.
+
+(Hint: Dot product of vectors represented as complex numbers is given by $\langle z_1, z_2 \rangle = \Re(\overline{z_1} z_2)$. For a complex number $z = a + ib\ (a,b\in\R$), $\Re(z) = a$ indicates the real component of $z$ and $\bar{z} = a - ib$ is the complex conjugate of $z$.)
+
+\ifans{}
+
+
+\subpart[8] In the provided code, RoPE is implemented using the functions \texttt{precompute\_rotary\_emb} and \texttt{apply\_rotary\_emb} in \texttt{src/attention.py}. You need to implement these functions and the parts of code marked \texttt{[part g]} in \texttt{src/attention.py} and \texttt{src/run.py} to use RoPE in the model.
+
+Train a model with RoPE on the span corruption task and finetune it on the birthplace prediction task. Specifically, you should be able to run the following four commands:
+
+\begin{lstlisting}[language=bash]
+# Pretrain the model
+python src/run.py pretrain rope wiki.txt \
+        --writing_params_path rope.pretrain.params
+        
+# Finetune the model
+python src/run.py finetune rope wiki.txt \
+        --reading_params_path rope.pretrain.params \
+        --writing_params_path rope.finetune.params \
+        --finetune_corpus_path birth_places_train.tsv
+        
+# Evaluate on the dev set; write to disk
+python src/run.py evaluate rope wiki.txt  \
+        --reading_params_path rope.finetune.params \
+        --eval_corpus_path birth_dev.tsv \
+        --outputs_path rope.pretrain.dev.predictions
+        
+# Evaluate on the test set; write to disk
+python src/run.py evaluate rope wiki.txt  \
+        --reading_params_path rope.finetune.params \
+        --eval_corpus_path birth_test_inputs.tsv \
+        --outputs_path rope.pretrain.test.predictions
+
+\end{lstlisting}
+
+
+We'll score your model as to whether it gets at least 30\% accuracy on the test set, which has answers held out.
+
+\end{subparts}
+
+\end{parts}
+
+\titledquestion{Considerations in pretrained knowledge}[5]
+{\color{red} \textbf{Please type the answers to these written questions (to make TA lives easier).}}
+\begin{parts}
+
+\part[1] Succinctly explain why the pretrained (vanilla) model was able to achieve an accuracy of above 10\%, whereas the non-pretrained model was not.
+
+\ifans{}
+
+\part[2] Take a look at some of the correct predictions of the pretrain+finetuned vanilla model, as well as some of the errors.
+We think you'll find that it's impossible to tell, just looking at the output, whether the model \textit{retrieved} the correct birth place, or \textit{made up} an incorrect birth place.
+Consider the implications of this for user-facing systems that involve pretrained NLP components.
+Come up with two \textbf{distinct} reasons why this model behavior (i.e. unable to tell whether it's retrieved or made up) may cause concern for such applications, and an example for each reason.
+
+\ifans{}
+
+\part[2] If your model didn't see a person's name at pretraining time, and that person was not seen at fine-tuning time either, it is not possible for it to have ``learned'' where they lived.
+Yet, your model will produce \textit{something} as a predicted birth place for that person's name if asked.
+Concisely describe a strategy your model might take for predicting a birth place for that person's name, and one ethical concern this raises for the use of such applications.\\
+(While 4b discussed the problems that could arise from made up predictions, 4c asks for a mechanism the model could be using for generating birth places of people not seen at fine-tuning time and why such a mechanism could be problematic.)
+
+\ifans{}
+
+\end{parts}
+
+

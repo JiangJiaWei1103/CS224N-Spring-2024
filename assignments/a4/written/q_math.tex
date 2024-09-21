@@ -1,0 +1,161 @@
+\graphicspath{ {images/} }
+
+\titledquestion{Attention Exploration}[14]
+\label{sec:analysis}
+
+Multi-head self-attention is the core modeling component of Transformers.
+In this question, we'll get some practice working with the self-attention equations, and motivate why multi-headed self-attention can be preferable to single-headed self-attention.
+
+Recall that attention can be viewed as an operation on a \textit{query} vector $q\in\mathbb{R}^d$, a set of \textit{value} vectors $\{v_1,\dots,v_n\}, v_i\in\mathbb{R}^d$, and a set of \textit{key} vectors $\{k_1,\dots,k_n\}, k_i \in \mathbb{R}^d$, specified as follows:
+\begin{align}
+&c = \sum_{i=1}^{n} v_i \alpha_i \\
+&\alpha_i = \frac{\exp(k_i^\top q)}{\sum_{j=1}^{n} \exp(k_j^\top q)}
+\end{align} 
+with $alpha = \{\alpha_1, \ldots, \alpha_n\}$ termed the ``attention weights''. 
+Observe that the output $c\in\mathbb{R}^d$ is an average over the value vectors weighted with respect to $\alpha$.
+
+\begin{parts}
+
+\part[3] \label{copying} \textbf{Copying in attention.} One advantage of attention is that it's particularly easy to ``copy'' a value vector to the output $c$. In this problem, we'll motivate why this is the case.
+
+\begin{subparts}
+    \subpart[2] The distribution $\alpha$ is typically relatively ``diffuse''; the probability mass is spread out between many different $\alpha_i$. However, this is not always the case. \textbf{Describe} (in one sentence) under what conditions the categorical distribution $\alpha$ puts almost all of its weight on some $\alpha_j$, where $j \in \{1, \ldots, n\}$ (i.e. $\alpha_j \gg \sum_{i \neq j} \alpha_i$). What must be true about the query $q$ and/or the keys $\{k_1,\dots,k_n\}$?
+
+    \ifans{
+        \newline
+        The probability mass concentrates on some $\alpha_j$ when the following condition holds:
+        $$
+            \alpha_j = \frac{\exp(k_j^\top q)}{\sum_{i=1}^{n} \exp(k_i^\top q)} \approx 1 \quad \text{if} \quad k_j^\top q \gg k_i^\top q, \quad \forall i \in \{1, \ldots, n\} \quad \text{and} \quad i \ne j
+        $$
+    }
+
+    \subpart[1] Under the conditions you gave in (i), \textbf{describe} the output $c$. 
+
+    \ifans{
+        \newline
+        First, we know that the sum of the attention weights is $\sum_{i=1}^{n} \alpha_i = 1$. For some $\alpha_j \approx 1$, we have the output $c$:
+        $$
+            c = \sum_{i = 1}^{n} v_i \alpha_i \approx v_j \alpha_j \approx v_j
+        $$
+    }
+
+\end{subparts}
+
+
+\part[2]\textbf{An average of two.} 
+\label{q_avg_of_two}
+Instead of focusing on just one vector $v_j$, a Transformer model might want to incorporate information from \textit{multiple} source vectors.
+
+Consider the case where we instead want to incorporate information from \textbf{two} vectors $v_a$ and $v_b$, with corresponding key vectors $k_a$ and $k_b$.
+Assume that (1) all key vectors are orthogonal, so $k_i^\top k_j = 0$ for all $i \neq j$; and (2) all key vectors have norm $1$.
+\textbf{Find an expression} for a query vector $q$ such that $c \approx \frac{1}{2}(v_a + v_b)$, and \textbf{justify your answer}.\footnote{Hint: while the softmax function will never \textit{exactly} average the two vectors, you can get close by using a large scalar multiple in the expression.} (Recall what you learned in part~(\ref{copying}).)
+
+\ifans{
+    \newline
+    First, the output vector $c$ is defined as follows:
+    $$
+        c = \sum_{i = 1}^{n} v_i \alpha_i \approx \frac{1}{2} v_a + \frac{1}{2} v_b
+    $$
+    , where we observe that attention weights are approximately shared between $\alpha_a$ and $\alpha_b$. Combined with the conclusion in the problem (a) i, we can write down the condition:
+    $$
+        k_a^\top q \approx k_b^\top q \gg k_i^\top q, \quad \forall i \in \{1, \ldots, n\} \quad \text{and} \quad i \ne a \quad \text{and} \quad i \ne b
+    $$
+    The condition indicates that the query $q$ is much similar to both $k_a$ and $k_b$ than all the other keys. Suppose $q$ is expressed as a linear combination of $k_a$ and $k_b$ with a dominant coefficient $\beta$:
+    $$
+        q = \beta (k_a + k_b), \quad \beta \gg 0
+    $$
+    Given that all keys form an \textbf{orthonormal} vector set, we can derive the attention scores as follows:
+    \begin{align*}
+        k_a^\top q &= \beta (k_a^\top k_a + k_a^\top k_b) = \beta (1 + 0) = \beta \\
+        k_b^\top q &= \beta (k_b^\top k_a + k_b^\top k_b) = \beta (0 + 1) = \beta \\
+        k_i^\top q &= \beta (k_i^\top k_a + k_i^\top k_b) = \beta (0 + 0) = 0, \quad \forall i \ne a \quad \text{and} \quad i \ne b
+    \end{align*}
+
+    Finally, we have the output vector $c$:
+    \begin{align*}
+        c 
+        &= \sum_{i = 1}^{n} v_i \alpha_i \\
+        &= \sum_{i = 1}^{n} v_i \frac{\exp{(k_i^\top q)}}{\sum_{j = 1}^{n} \exp{(k_j^\top q)}} \\
+        &= \sum_{i = 1}^{n} v_i \frac{\exp{(k_i^\top q)}}{n - 2 + 2 \beta} \\
+        &\approx v_a \frac{\beta}{2 \beta} + v_b \frac{\beta}{2 \beta} \quad\quad \because \beta \gg 0 \\
+        &= \frac{1}{2} (v_a + v_b)
+    \end{align*}
+}
+
+\part[5]\textbf{Drawbacks of single-headed attention:} \label{q_problem_with_single_head}
+In the previous part, we saw how it was \textit{possible} for a single-headed attention to focus equally on two values.
+The same concept could easily be extended to any subset of values.
+In this question we'll see why it's not a \textit{practical} solution.
+
+Consider a set of key vectors $\{k_1,\dots,k_n\}$ that are now randomly sampled, $k_i\sim \mathcal{N}(\mu_i, \Sigma_i)$, where the means $\mu_i \in \mathbb{R}^d$ are known to you, but the covariances $\Sigma_i$ are unknown (unless specified otherwise in the question).
+Further, assume that the means $\mu_i$ are all perpendicular; $\mu_i^\top \mu_j = 0$ if $i\not=j$, and unit norm, $\|\mu_i\|=1$.
+
+\begin{subparts}
+\subpart[2] Assume that the covariance matrices are $\Sigma_i = \alpha I, \forall i \in \{1, 2, \ldots, n\}$, for vanishingly small $\alpha$.
+Design a query $q$ in terms of the $\mu_i$ such that as before, $c\approx \frac{1}{2}(v_a + v_b)$, and provide a brief argument as to why it works.
+
+\ifans{
+    \newline
+    Given that the covariance matrix $\Sigma_i$ is diagonal (i.e., all of its off-diagonal elements are zeros) and the variance of each variable is vanishingly small (i.e., close to zero), we approximate each key as follows:
+    $$
+        k_i \approx \mu_i
+    $$
+
+    Again, all $u_i$'s form a \textbf{orthonormal} vector set. Following the logic of the question (b), the query $q$ can be defined as follows:
+    $$
+        q = \beta (\mu_a + \mu_b), \quad \beta \gg 0
+    $$
+}
+
+\subpart[3] Though single-headed attention is resistant to small perturbations in the keys, some types of larger perturbations may pose a bigger issue. In some cases, one key vector $k_a$ may be larger or smaller in norm than the others, while still pointing in the same direction as $\mu_a$.\footnote{Unlike the original Transformer, newer Transformer models apply layer normalization before attention. In these pre-layernorm models, norms of keys cannot be too different which makes the situation in this question less likely to occur.}
+
+As an example, let us consider a covariance for item $a$ as $\Sigma_a = \alpha I + \frac{1}{2}(\mu_a\mu_a^\top)$ for vanishingly small $\alpha$ (as shown in figure \ref{ka_plausible}). This causes $k_a$ to point in roughly the same direction as $\mu_a$, but with large variances in magnitude. Further, let $\Sigma_i = \alpha I$ for all $i \neq a$.
+\begin{figure}[h]
+\centering
+\captionsetup{justification=centering,margin=2cm}
+\includegraphics[width=0.35\linewidth]{images/ka_plausible.png}
+\caption{The vector $\mu_a$ (shown here in 2D as an example), with the range of possible values of $k_a$ shown in red. As mentioned previously, $k_a$ points in roughly the same direction as $\mu_a$, but may have larger or smaller magnitude.}
+\label{ka_plausible}
+\end{figure}
+
+When you sample $\{k_1,\dots,k_n\}$ multiple times, and use the $q$ vector that you defined in part i., what do you expect the vector $c$ will look like qualitatively for different samples? Think about how it differs from part (i) and how $c$'s variance would be affected.
+
+\ifans{
+    \newline
+    
+}
+
+
+
+
+\end{subparts}
+
+\part[3]\textbf{Benefits of multi-headed attention:} \label{q_multi_head}
+Now we'll see some of the power of multi-headed attention.
+We'll consider a simple version of multi-headed attention which is identical to single-headed self-attention as we've presented it, except two query vectors ($q_1$ and $q_2$) are defined, which leads to a pair of vectors ($c_1$ and $c_2$), each the output of single-headed attention given its respective query vector.
+The final output of the multi-headed attention is their average, $\frac{1}{2}(c_1+c_2)$.
+
+As in question 1(\ref{q_problem_with_single_head}), consider a set of key vectors $\{k_1,\dots,k_n\}$ that are randomly sampled, $k_i\sim \mathcal{N}(\mu_i, \Sigma_i)$, where the means $\mu_i$ are known to you, but the covariances $\Sigma_i$ are unknown.
+Also as before, assume that the means $\mu_i$ are mutually orthogonal; $\mu_i^\top \mu_j = 0$ if $i\not=j$, and unit norm, $\|\mu_i\|=1$.
+
+\begin{subparts}
+\subpart[1]
+Assume that the covariance matrices are $\Sigma_i=\alpha I$, for vanishingly small $\alpha$.
+Design $q_1$ and $q_2$ in terms of $\mu_i$ such that $c$ is approximately equal to $\frac{1}{2}(v_a+v_b)$. 
+Note that $q_1$ and $q_2$ should have different expressions.
+
+\ifans{}
+
+\subpart[2]
+Assume that the covariance matrices are $\Sigma_a=\alpha I + \frac{1}{2}(\mu_a\mu_a^\top)$ for vanishingly small $\alpha$, and $\Sigma_i=\alpha I$  for all $i \neq a$.
+Take the query vectors $q_1$ and $q_2$ that you designed in part i.
+What, qualitatively, do you expect the output $c$ to look like across different samples of the key vectors? Explain briefly in terms of variance in $c_1$ and $c_2$. You can ignore cases in which $k_a^\top q_i < 0$.
+
+\ifans{}
+\end{subparts}
+
+\part[1] Based on part~(\ref{q_multi_head}), briefly summarize how multi-headed attention overcomes the drawbacks of single-headed attention that you identified in part~(\ref{q_problem_with_single_head}).
+
+\ifans{}
+
+\end{parts}
