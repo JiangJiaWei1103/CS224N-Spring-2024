@@ -61,3 +61,7 @@ In this repository, I share my solutions and additional resources for CS224N in 
 
 ### Sat Sep 21
 * Add [assignment 4](https://github.com/JiangJiaWei1103/CS224N-Spring-2024/tree/main/assignments/a4) written to Q1 (c) i and Q2.
+
+### Wed Sep 25
+* Recently play around with a [RAG application](https://github.com/JiangJiaWei1103/Hack-RAG/tree/main).
+   * As my custom final project?
