@@ -69,7 +69,7 @@ In this repository, I share my solutions and additional resources for CS224N in 
 ### Fri Sep 28
 * Read chapter 7 of [Natural Language Processing with Transformers](https://transformersbook.com/).
     * Haven't run the corresponding notebook due to the problem of launching Elasticsearch locally.
-* Watch [Lecture12 - Question Answering](https://www.youtube.com/watch?v=NcqfHa0_YmU&list=PLoROMvodv4rMFqRtEuo6SGjY4XbRIVRd4&index=13)
+* Watch [Lecture12 - Question Answering](https://www.youtube.com/watch?v=NcqfHa0_YmU&list=PLoROMvodv4rMFqRtEuo6SGjY4XbRIVRd4&index=13).
 * Read [RoFormer: Enhanced Transformer with Rotary Position Embedding](https://arxiv.org/abs/2104.09864).
     * Have to reread it to grasp the main points.
 
