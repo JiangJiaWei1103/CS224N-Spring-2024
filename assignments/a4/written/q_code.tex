@@ -105,6 +105,14 @@ python src/run.py evaluate vanilla wiki.txt  \
 
 Training will take less than 10 minutes (on GCP).  Report your model's accuracy on the dev set (as printed by the second command above). Similar to assignment 3, we also have Tensorboard logging in assignment 4 for debugging. It can be launched using \texttt{tensorboard --logdir expt/}.  Don't be surprised if it is well below 10\%; we will be digging into why in Part 4. As a reference point, we want to also calculate the accuracy the model would have achieved if it had just predicted ``London'' as the birth place for everyone in the dev set. Fill in \texttt{london\_baseline.py} to calculate the accuracy of that approach and report your result in the file. You should be able to leverage existing code such that the file is only a few lines long.
 
+\ifans{
+    \newline
+    Models's accuray on the dev set is reported as follows:
+    \begin{itemize}
+        \item Without pre-training: $\frac{11}{500} = 2.2\%$
+        \item Baseline (with constant prediction "London"): $5.0\%$
+    \end{itemize}
+}
 
 \part[10]\textbf{Define a \textit{span corruption} function for pretraining.}\\
 In the file \texttt{src/dataset.py}, implement the \texttt{\_\_getitem\_\_()} function for the dataset class \\ \texttt{CharCorruptionDataset}.
@@ -151,6 +159,11 @@ python src/run.py evaluate vanilla wiki.txt  \
 \end{lstlisting}
 
 We expect the dev accuracy will be at least 15\%, and will expect a similar accuracy on the held out test set.
+
+\ifans{
+    \newline
+    With the pre-training phase, the model's accuracy on the dev set boosts to $\frac{105}{500} = 21\%$
+}
 
 \part[11] \textbf{Write and try out a different kind of position embeddings (Budget about 1 hour for training)}\\
 
@@ -209,7 +222,34 @@ For higher dimensional feature vectors, this interpretation allows us to compute
 
 Show that the elements of the vector in Equation~\ref{eq:rope_matrix} can be obtained from Equation~\ref{eq:rope_elementwise}. Note that some additional operations like reshaping are necessary to make the two expressions equal but you do not need to provide a detailed derivation for full points. 
 
-\ifans{}
+\ifans{
+    \newline
+    First, RoPE divides the d-dimension space into $\frac{d}{2}$ sub-spaces (i.e., groups), each of which is transformed by a rotation matrix parameterized by $\theta_j,\ j \in \{1, 2, \ldots, d/2\}$. Note that we use $j$ here to avoid confusing the group index with the imaginary notation $i$ of the complex number.\newline
+    Focusing on the $j$-th dimension of Equation~\ref{eq:rope_elementwise}, we derive the multiplication as follows:
+    \begin{align*}
+        (\cos t\theta_j + i\sin t\theta_j)(x^{(2j-1)}_t + i x^{(2j)}_t)
+        &= x^{(2j-1)}_{t} \cos t\theta_j + i x^{(2j-1)}_{t} \sin t\theta_j + i x^{(2j)}_t \cos t\theta_j - x^{(2j)}_t \sin t\theta_j \\
+        &= (x^{(2j-1)}_{t} \cos t\theta_j - x^{(2j)}_t \sin t\theta_j) + i (x^{(2j-1)}_{t} \sin t\theta_j + x^{(2j)}_t \cos t\theta_j)
+    \end{align*}
+
+    Then, the $(2j-1)$-th and $(2j)$-th elements in Equation~\ref{eq:rope_matrix} can be computed as below:
+    \begin{align*}
+        \begin{pmatrix}
+            0 & 0 & \cdots & \cos t\theta_j & -\sin t\theta_j & \cdots & 0 & 0\\
+            0 & 0 & \cdots & \sin t\theta_j & \cos t\theta_j & \cdots & 0 & 0\\
+        \end{pmatrix}
+        \begin{pmatrix}
+            x^{(1)}_t \\ x^{(2)}_t \\ \vdots \\ x^{(2j-1)}_t \\ x^{(2j)}_t \\ \vdots \\ x^{(d-1)}_t \\ x^{(d)}_t 
+        \end{pmatrix}
+        = 
+        \begin{pmatrix}
+            x^{(2j-1)}_t \cos t\theta_j - x^{(2j)}_t \sin t\theta_j \\
+            x^{(2j-1)}_t \sin t\theta_j + x^{(2j)}_t \cos t\theta_j \\
+        \end{pmatrix}
+    \end{align*}
+
+    Compared to the result derived from Equation~\ref{eq:rope_elementwise}, the $(2j-1)$-th element is equal to the real part and the $(2j)$-th element corresponds to the imaginary part. Hence, we show that the elements of the output vector in Equation~\ref{eq:rope_matrix} can be obtained from Equation~\ref{eq:rope_elementwise} for any group $j,\ j \in \{1, 2, \ldots, d/2\}$.
+}
 
 \subpart[1] \textbf{Relative Embeddings.} Now we will show that the dot product of the RoPE embeddings of two vectors at positions $t_1$ and $t_2$ depends on the relative position $t_1 - t_2$ only. 
 
@@ -219,7 +259,68 @@ Show that $\langle \text{RoPE}(z_1, t_1), \text{RoPE}(z_2, t_2) \rangle = \langl
 
 (Hint: Dot product of vectors represented as complex numbers is given by $\langle z_1, z_2 \rangle = \Re(\overline{z_1} z_2)$. For a complex number $z = a + ib\ (a,b\in\R$), $\Re(z) = a$ indicates the real component of $z$ and $\bar{z} = a - ib$ is the complex conjugate of $z$.)
 
-\ifans{}
+\ifans{
+    \newline
+    Working with complex number representations, we define $z_1 = z^{(1)}_{1} + i z^{(2)}_{1}$ and $z_2 = z^{(1)}_{2} + i z^{(2)}_{2}$. Following Equation~\ref{eq:rope_elementwise}, the dot product of two \textbf{RoPE encoded} vectors are computed as below:
+    \begin{align*}
+        \langle \text{RoPE}(z_1, t_1), \text{RoPE}(z_2, t_2) \rangle
+        &= \Re[\overline{(\cos t_1 \theta + i \sin t_1 \theta) z_1}(\cos t_2 \theta + i \sin t_2 \theta)z_2] \\
+        &= \Re[(\cos t_1 \theta \cos t_2 \theta - i \sin t_1 \theta \cos t_2 \theta + i \cos t_1 \theta \sin t_2 \theta + \sin t_1 \theta \sin t_2 \theta) \overline{z_1} z_2] \\
+        &= \Re[(\cos (t_1 - t_2)\theta - i \sin (t_1 - t_2)\theta) \overline{z_1} z_2] \\
+        &= \Re[\overline{(\cos (t_1 - t_2)\theta + i \sin (t_1 - t_2)\theta)} \overline{z_1} z_2] \\
+        &= \Re[\overline{(\cos (t_1 - t_2)\theta + i \sin (t_1 - t_2)\theta) z_1} z_2] \\
+        &= \Re[\overline{(\cos (t_1 - t_2)\theta + i \sin (t_1 - t_2)\theta) z_1} (\cos 0 + i \sin 0 ) z_2] \\
+        &= \Re[\overline{(\cos (t_1 - t_2)\theta + i \sin (t_1 - t_2)\theta) z_1} (\cos 0 + i \sin 0 ) z_2] \\
+        &= \langle \text{RoPE}(z_1, t_1 - t_2), \text{RoPE}(z_2, 0) \rangle
+    \end{align*}
+
+    (Skip the following part if you aren't interested.) \newline
+    Instead of using complex number representations, I think directly applying rotation matrices is more intuitive. Let $\mathbf{R}_1 \in \mathbb{R}^{2 \times 2}$ and $\mathbf{R}_2 \in \mathbb{R}^{2 \times 2}$ are rotation matrices at positions $t_1$ and $t_2$.
+    \begin{align*}
+        \langle \text{RoPE}(z_1, t_1), \text{RoPE}(z_2, t_2) \rangle
+        &= (\mathbf{R}_1 z_1)^\top (\mathbf{R}_2 z_2) \\
+        &= z_1^\top \mathbf{R}_1 \mathbf{R}_2 z_2 \\
+        &= 
+        \begin{pmatrix}
+            z_1^1 z_1^2
+        \end{pmatrix}
+        \begin{pmatrix}
+            \cos t_1 \theta & \sin t_1 \theta \\ -\sin t_1 \theta  & \cos t_1 \theta
+        \end{pmatrix} 
+        \begin{pmatrix}
+            \cos t_2 \theta & -\sin t_2 \theta \\ \sin t_2 \theta  & \cos t_2 \theta
+        \end{pmatrix} 
+        \begin{pmatrix}
+            z_2^1 \\ z_2^2
+        \end{pmatrix} \\
+        &= 
+        \begin{pmatrix}
+            z_1^1 z_1^2
+        \end{pmatrix}
+        \begin{pmatrix}
+            \cos (t_1 - t_2) \theta & \sin (t_1 - t_2) \theta \\ 
+            -\sin (t_1 - t_2) \theta  & \cos (t_1 - t_2) \theta
+        \end{pmatrix} 
+        \begin{pmatrix}
+            z_2^1 \\ z_2^2
+        \end{pmatrix} \\
+        &= 
+        (\begin{pmatrix}
+            \cos (t_1 - t_2) \theta & -\sin (t_1 - t_2) \theta \\ 
+            \sin (t_1 - t_2) \theta  & \cos (t_1 - t_2) \theta
+        \end{pmatrix}
+        \begin{pmatrix}
+            z_1^1 \\ z_1^2
+        \end{pmatrix})^\top
+        \begin{pmatrix}
+            z_2^1 \\ z_2^2
+        \end{pmatrix} \\
+        &= (\mathbf{R}_{3} z_1)^\top z_2 \\
+        &= \langle \text{RoPE}(z_1, t_1 - t_2), \text{RoPE}(z_2, 0) \rangle
+    \end{align*}
+
+    , where $\mathbf{R}_3 \in \mathbb{R}^{2 \times 2}$ is a rotation matrix with angle $(t_1 - t_2) \theta$. That is, combining two rotation operations is still a rotation operation itself.
+}
 
 
 \subpart[8] In the provided code, RoPE is implemented using the functions \texttt{precompute\_rotary\_emb} and \texttt{apply\_rotary\_emb} in \texttt{src/attention.py}. You need to implement these functions and the parts of code marked \texttt{[part g]} in \texttt{src/attention.py} and \texttt{src/run.py} to use RoPE in the model.
@@ -254,6 +355,11 @@ python src/run.py evaluate rope wiki.txt  \
 
 We'll score your model as to whether it gets at least 30\% accuracy on the test set, which has answers held out.
 
+\ifans{
+    \newline
+    With RoPE, the model's accuracy on the dev set becomes $\frac{145}{500} \approx 29.00\%$.
+}
+
 \end{subparts}
 
 \end{parts}
@@ -264,21 +370,32 @@ We'll score your model as to whether it gets at least 30\% accuracy on the test 
 
 \part[1] Succinctly explain why the pretrained (vanilla) model was able to achieve an accuracy of above 10\%, whereas the non-pretrained model was not.
 
-\ifans{}
+\ifans{
+    \newline
+    During pre-training, the model is challenged to generate contextually coherent text through a task called span corruption, which involves reconstructing missing segments of text. This process helps the model grasp complex structures and contextual relationships in the text data. In contrast, directly training the model to generate specific information, such as birthplaces, with a limited dataset is difficult because it lacks the foundational understanding of text structure and context gained through extensive pre-training.
+}
 
 \part[2] Take a look at some of the correct predictions of the pretrain+finetuned vanilla model, as well as some of the errors.
 We think you'll find that it's impossible to tell, just looking at the output, whether the model \textit{retrieved} the correct birth place, or \textit{made up} an incorrect birth place.
 Consider the implications of this for user-facing systems that involve pretrained NLP components.
 Come up with two \textbf{distinct} reasons why this model behavior (i.e. unable to tell whether it's retrieved or made up) may cause concern for such applications, and an example for each reason.
 
-\ifans{}
+\ifans{
+    \begin{itemize}
+        \item \textbf{The spreading of misinformation.} The widespread availability of content on the World Wide Web means that information, whether accurate or not, can quickly spread online. When there are no reliable methods to distinguish between correctly retrieved information and AI-generated inaccuracies (sometimes referred to as \textbf{hallucinations}), the trustworthiness of content is undermined. For instance, if a journalist mistakenly broadcasts fabricated details, such as the incorrect birthplace of a celebrity, it can erode media literacy by promoting misinformation and reducing the audience's ability to critically assess the information they consume.
+        \item \textbf{The impact on secondary research.} Once AI-generated misinformation is cited in academic works, the mistakes may propagate to secondary research, which amplifies the negative effect. In research fields like history, where precision and fact-checking are essential, AI hallucinations could mislead both current scholars and future generations, resulting in a less reliable body of academic knowledge.
+    \end{itemize}
+}
 
 \part[2] If your model didn't see a person's name at pretraining time, and that person was not seen at fine-tuning time either, it is not possible for it to have ``learned'' where they lived.
 Yet, your model will produce \textit{something} as a predicted birth place for that person's name if asked.
 Concisely describe a strategy your model might take for predicting a birth place for that person's name, and one ethical concern this raises for the use of such applications.\\
 (While 4b discussed the problems that could arise from made up predictions, 4c asks for a mechanism the model could be using for generating birth places of people not seen at fine-tuning time and why such a mechanism could be problematic.)
 
-\ifans{}
+\ifans{
+    \newline
+    To enable the model to predict the birthplace of an unseen individual during both pre-training and fine-tuning, we can leverage the Retrieval-Augmented Generation (RAG) technique. RAG allows the model to access up-to-date information at inference time by retrieving relevant external documents. However, concerns remain regarding data privacy, the reliability of external sources, and misinformation. Ensuring that the retrieved data is both accurate and trustworthy is crucial to maintaining the integrity of the model's predictions.
+}
 
 \end{parts}
 

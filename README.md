@@ -61,3 +61,15 @@ In this repository, I share my solutions and additional resources for CS224N in 
 
 ### Sat Sep 21
 * Add [assignment 4](https://github.com/JiangJiaWei1103/CS224N-Spring-2024/tree/main/assignments/a4) written to Q1 (c) i and Q2.
+
+### Fri Sep 28
+* Read chapter 7 of [Natural Language Processing with Transformers](https://transformersbook.com/).
+    * Haven't run the corresponding notebook due to the problem of launching Elasticsearch locally.
+* Watch [Lecture12 - Question Answering](https://www.youtube.com/watch?v=NcqfHa0_YmU&list=PLoROMvodv4rMFqRtEuo6SGjY4XbRIVRd4&index=13)
+* Read [RoFormer: Enhanced Transformer with Rotary Position Embedding](https://arxiv.org/abs/2104.09864).
+    * Have to reread it to grasp the main points.
+
+### Sat Sep 29
+* Add [assignment 4](https://github.com/JiangJiaWei1103/CS224N-Spring-2024/tree/main/assignments/a4) written and coding parts.
+    * Pre-train and fine-tune a simple GPT which achieves accuracy of 29.00 of the dev set in Q3 (g).
+    * I will finish Q1 (c) to (e) after reviewing probability theory.

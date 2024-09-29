@@ -66,13 +66,19 @@ model = None
 if args.variant == 'vanilla':
     # TODO: [part c] Make some model here
     ### YOUR CODE HERE ###
-    pass
+
+    # Actually, model will be moved to the target device in trainer
+    model = models.GPT(mconf).to(device)
+
     ### END YOUR CODE ###
 elif args.variant == 'rope':
     # TODO: [part g] Make some other model here
     # set mconf.rope parameter
     ### YOUR CODE HERE ###
-    pass
+    
+    mconf.rope = True
+    model = models.GPT(mconf).to(device)   
+
     ### END YOUR CODE ###
 else:
     raise ValueError("Unknown model variant")
@@ -102,7 +108,28 @@ if args.function == 'pretrain':
     # writer=writer
 
     ### YOUR CODE HERE ###
-    pass
+
+    # The data set for pretraining has been loaded
+
+    # Build trainer
+    trainer_cfg = trainer.TrainerConfig(
+        max_epochs=650,
+        batch_size=128,
+        learning_rate=args.pretrain_lr,
+        lr_decay=True,
+        warmup_tokens=512 * 20,
+        final_tokens=650 * len(pretrain_dataset) * block_size,
+        num_workers=4,
+        writer=writer, 
+    )
+    trainer = trainer.Trainer(model, pretrain_dataset, None, trainer_cfg)
+
+    # Pretrain the model
+    trainer.train()
+
+    # Dump pretrained model weights
+    torch.save(model.state_dict(), args.writing_params_path)
+
     ### END YOUR CODE ###
 elif args.function == 'finetune':
     assert args.writing_params_path is not None
@@ -141,7 +168,39 @@ elif args.function == 'finetune':
     #     number of epochs for each case.
 
     ### YOUR CODE HERE ###
-    pass
+
+    # Prepare dataset
+    ds_tr = dataset.NameDataset(
+        pretraining_dataset=pretrain_dataset, 
+        data=open(args.finetune_corpus_path, encoding="utf-8").read()
+    )
+    ds_test = None
+
+    # Load pre-trained model weights
+    if args.reading_params_path is not None:
+        model.load_state_dict(
+            torch.load(args.reading_params_path, map_location=torch.device(device))
+        )
+
+    # Build trainer
+    trainer_cfg = trainer.TrainerConfig(
+        max_epochs=75 if args.reading_params_path is None else 10,
+        batch_size=256,
+        learning_rate=args.finetune_lr,
+        lr_decay=True,
+        warmup_tokens=512 * 20,
+        final_tokens=200 * len(pretrain_dataset) * block_size,
+        num_workers=4,
+        writer=writer,
+    )
+    trainer = trainer.Trainer(model, ds_tr, ds_test, trainer_cfg)
+
+    # Finetune the model
+    trainer.train()
+
+    # Dump finetuned model weights
+    torch.save(model.state_dict(), args.writing_params_path)
+
     ### END YOUR CODE ###
 elif args.function == 'evaluate':
     assert args.outputs_path is not None

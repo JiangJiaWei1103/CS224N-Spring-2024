@@ -12,7 +12,18 @@ def main():
 
     # Compute accuracy in the range [0.0, 100.0]
     ### YOUR CODE HERE ###
-    pass
+
+    DEV_FILE = "birth_dev.tsv"
+
+    # Generate naive predictions
+    with open(DEV_FILE, "r", encoding="utf-8") as f:
+        n_trues = len(f.readlines())
+    preds = ["London"] * n_trues
+
+    # Derive accuracy
+    total, correct = utils.evaluate_places(DEV_FILE, preds)
+    accuracy = correct / total * 100
+
     ### END YOUR CODE ###
 
     return accuracy

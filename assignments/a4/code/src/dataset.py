@@ -48,7 +48,7 @@ from torch.utils.data import Dataset
 #
 #     [prefix] MASK_CHAR [suffix] MASK_CHAR [masked_content] [pads]
 #
-#   This resulting string, denoted masked_string, serves as the output example.
+#   This resulting string, denoted masked_string, serves as the output example
 #   Here MASK_CHAR is the masking character and [pads] is a string of repeated
 #     PAD_CHAR characters chosen so that the entire string is of length
 #     self.block_size + 1.
@@ -101,7 +101,40 @@ class CharCorruptionDataset(Dataset):
     def __getitem__(self, idx):
         # TODO [part e]: see spec above
         ### YOUR CODE HERE ###
-        pass
+
+        # 0. Retrieve a document
+        document = self.data[idx]
+
+        # 1. Randomly truncate the doc
+        # Not sure if we must truncate right only
+        trunc_len = random.randint(4, int(self.block_size * 7 / 8))
+        # trunc_s = random.randint(0, len(document) - trunc_len) 
+        # trunc_e = trunc_s + trunc_len
+        # document = document[trunc_s:trunc_e]
+        document = document[:trunc_len]
+
+        # 2. Perform random masking
+        mask_len = trunc_len // 4
+        mask_len = mask_len + random.randint(-mask_len // 2, mask_len // 2)
+        mask_s = random.randint(0, trunc_len - mask_len)
+        mask_e = mask_s + mask_len
+        prefix, masked_content, suffix = document[:mask_s], document[mask_s:mask_e], document[mask_e:] 
+
+        # 3. Rearrange the masked string
+        masked_string = prefix + self.MASK_CHAR + suffix + self.MASK_CHAR + masked_content
+        pads = self.PAD_CHAR * (self.block_size + 1 - len(masked_string))
+        masked_string += pads
+
+        # 4. Construct the data sample
+        x = masked_string[:-1]
+        y = masked_string[1:]
+
+        # 5. Encode input and output sequences
+        x = torch.tensor([self.stoi[c] for c in x], dtype=torch.long)
+        y = torch.tensor([self.stoi[c] for c in y], dtype=torch.long)
+
+        return x, y
+
         ### END YOUR CODE ###
 
 
