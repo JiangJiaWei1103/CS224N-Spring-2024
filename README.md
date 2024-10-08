@@ -77,3 +77,8 @@ In this repository, I share my solutions and additional resources for CS224N in 
 * Add [assignment 4](https://github.com/JiangJiaWei1103/CS224N-Spring-2024/tree/main/assignments/a4) written and coding parts.
     * Pre-train and fine-tune a simple GPT which achieves accuracy of 29.00 of the dev set in Q3 (g).
     * I will finish Q1 (c) to (e) after reviewing probability theory.
+
+### Tue Oct 8
+* Watch [Lecture 16 - Multimodal Deep Learning](https://www.youtube.com/watch?v=5vfIT5LOkR0&list=PLoROMvodv4rMFqRtEuo6SGjY4XbRIVRd4&index=22), [Lecture 17 - Coreference Resolution](https://www.youtube.com/watch?v=FFRnDRcbQQU&list=PLoROMvodv4rMFqRtEuo6SGjY4XbRIVRd4&index=13), [Lecture 18 - Model Analysis and Explanation](https://www.youtube.com/watch?v=f_qmSSBWV_E&list=PLoROMvodv4rMFqRtEuo6SGjY4XbRIVRd4&index=17), [Lecture 19 - Model Interpretability & Editing](https://www.youtube.com/watch?v=cd3pRpEtjLs&list=PLoROMvodv4rMFqRtEuo6SGjY4XbRIVRd4&index=23).
+    * I will dive deeper into lec 16, which looks fascinating. Also, I can't quite get lec 19.
+* Add the default final project [minBERT](https://github.com/JiangJiaWei1103/CS224N-Spring-2024/tree/main/minBERT) with section 3 implemented.

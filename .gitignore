@@ -1,3 +1,5 @@
 __MACOSX/
 .ipynb_checkpoints/
 __pycache__
+
+minBERT/code/data/
