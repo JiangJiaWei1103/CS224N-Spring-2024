@@ -60,7 +60,39 @@ class AdamW(Optimizer):
                 # Refer to the default project handout for more details.
 
                 ### TODO
-                raise NotImplementedError
+                
+                # Retrieve states and hyperparameters
+                beta_1, beta_2 = group["betas"]
+                eps = group["eps"]
+                weight_decay = group["weight_decay"]
 
+                if state == dict():
+                    t = 0
+                    m = torch.zeros(*grad.shape, dtype=torch.float32, device=grad.device) 
+                    v = torch.zeros(*grad.shape, dtype=torch.float32, device=grad.device)
+                else:
+                    t, m, v = state["t"], state["m"], state["v"]
+
+                t += 1
+
+                # Update 1st and 2nd moments
+                m = beta_1 * m + (1 - beta_1) * grad
+                v = beta_2 * v + (1 - beta_2) * (grad * grad)
+
+                # Apply bias correction
+                bias_corr_1 = 1 - beta_1 ** t
+                bias_corr_2 = 1 - beta_2 ** t
+                alpha_t = alpha * bias_corr_2**0.5 / bias_corr_1
+
+                # Update model parameters
+                p_new = p.data - alpha_t * m / (torch.sqrt(v) + eps)
+
+                # Apply weight decay
+                p.data = p_new - alpha * weight_decay * p.data
+
+                # Save new states
+                self.state[p]["t"] = t
+                self.state[p]["m"] = m
+                self.state[p]["v"] = v
 
         return loss
