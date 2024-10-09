@@ -82,3 +82,11 @@ In this repository, I share my solutions and additional resources for CS224N in 
 * Watch [Lecture 16 - Multimodal Deep Learning](https://www.youtube.com/watch?v=5vfIT5LOkR0&list=PLoROMvodv4rMFqRtEuo6SGjY4XbRIVRd4&index=22), [Lecture 17 - Coreference Resolution](https://www.youtube.com/watch?v=FFRnDRcbQQU&list=PLoROMvodv4rMFqRtEuo6SGjY4XbRIVRd4&index=13), [Lecture 18 - Model Analysis and Explanation](https://www.youtube.com/watch?v=f_qmSSBWV_E&list=PLoROMvodv4rMFqRtEuo6SGjY4XbRIVRd4&index=17), [Lecture 19 - Model Interpretability & Editing](https://www.youtube.com/watch?v=cd3pRpEtjLs&list=PLoROMvodv4rMFqRtEuo6SGjY4XbRIVRd4&index=23).
     * I will dive deeper into lec 16, which looks fascinating. Also, I can't quite get lec 19.
 * Add the default final project [minBERT](https://github.com/JiangJiaWei1103/CS224N-Spring-2024/tree/main/minBERT) with section 3 implemented.
+
+### Wed Oct 9
+* Finish the first half of [minBERT](https://github.com/JiangJiaWei1103/CS224N-Spring-2024/tree/main/minBERT).
+    * Fine-tuning the last linear layer for SST: Dev acc 0.931.
+    * Fine-tuning the last linear layer for CFIMDB: Dev acc 0.771.
+    * Fine-tuning the full model for SST: Dev acc 0.517.
+    * Fine-tuning the full model for CFIMDB: Dev acc 0.959.
+* Read [BERT: Pretraining of Deep Bidirectional Transformers for Language Understanding](https://arxiv.org/abs/1810.04805). 
